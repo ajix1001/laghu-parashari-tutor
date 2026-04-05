@@ -13,5 +13,6 @@ venv/
 # Local Netlify folder
 .netlify
 
-# Function deps — built by CI, not committed
-netlify/functions/lib/
+# Function bundle dirs — built by CI, not committed
+netlify/functions/api/lib/
+netlify/functions/api/src/

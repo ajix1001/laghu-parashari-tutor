@@ -16,17 +16,30 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Python dependencies into function bundle
+      - name: Bundle deps + source into function directory
         run: |
-          pip install -r requirements.txt --target netlify/functions/lib --upgrade
-          # Remove dist-info to keep bundle lean
-          find netlify/functions/lib -name "*.dist-info" -type d -exec rm -rf {} + 2>/dev/null || true
-          find netlify/functions/lib -name "*.pyi" -delete 2>/dev/null || true
+          FUNC_DIR="netlify/functions/api"
+
+          # 1. Install Python deps into lib/
+          pip install -r requirements.txt --target "$FUNC_DIR/lib" --upgrade --quiet
+          # Trim dist-info and __pycache__ to reduce zip size
+          find "$FUNC_DIR/lib" -name "*.dist-info" -type d -exec rm -rf {} + 2>/dev/null || true
+          find "$FUNC_DIR/lib" -name "__pycache__"  -type d -exec rm -rf {} + 2>/dev/null || true
+
+          # 2. Copy project source into src/ so the function can import it
+          mkdir -p "$FUNC_DIR/src"
+          cp main.py database.py "$FUNC_DIR/src/"
+          cp -r engines data models api "$FUNC_DIR/src/"
+          # Remove pycache from source copy
+          find "$FUNC_DIR/src" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+
+          echo "Function directory contents:"
+          ls -la "$FUNC_DIR"
 
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
 
-      - name: Deploy to Netlify (frontend + functions)
+      - name: Deploy to Netlify (frontend + Python function)
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID:    ${{ secrets.NETLIFY_SITE_ID }}
@@ -35,4 +48,4 @@ jobs:
             --prod \
             --dir=frontend \
             --functions=netlify/functions \
-            --message="Deployed from GitHub Actions"
+            --message="Deploy from GitHub Actions ($(git rev-parse --short HEAD))"
