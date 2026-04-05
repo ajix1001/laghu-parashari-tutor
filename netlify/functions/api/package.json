@@ -1,0 +1,8 @@
+{
+  "name": "laghu-parashari-api",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "astronomy-engine": "^2.1.19"
+  }
+}
