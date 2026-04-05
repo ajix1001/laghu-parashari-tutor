@@ -89,12 +89,13 @@ def _sidereal_time_to_asc(lst_rad: float, lat_deg: float,
     """
     lat = math.radians(lat_deg)
     eps = math.radians(obliquity_deg)
-    # Standard ascendant formula
+    # Standard ascendant formula — raw result is the Descendant (western horizon).
+    # Add 180° to get the Ascendant (eastern horizon).
     asc = math.atan2(
         -math.cos(lst_rad),
         math.sin(lst_rad) * math.cos(eps) + math.tan(lat) * math.sin(eps)
     )
-    return math.degrees(asc) % 360.0
+    return (math.degrees(asc) + 180.0) % 360.0
 
 
 def _compute_lagna(d: ephem.Date, lat: float, lon: float,
