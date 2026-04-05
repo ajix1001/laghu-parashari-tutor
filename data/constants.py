@@ -1,5 +1,5 @@
 """
-Core Jyotish constants derived from Laghu Parashari (S.R. Jha).
+Core Jyotish constants derived from the classical Laghu Parashari text.
 
 All planetary sequences, nakshatra data, and period lengths are
 sourced directly from the text's canonical Vimshottari Dasha tables.

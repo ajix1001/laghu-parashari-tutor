@@ -7,7 +7,7 @@ Implements the full 120-year cycle including:
   • Antardasha (sub-periods) for any given Mahadasha
   • Pratyantardasha (sub-sub-periods) for any given Antardasha
 
-All formulas follow Laghu Parashari (S.R. Jha).
+All formulas follow the classical Laghu Parashari text.
 """
 
 from __future__ import annotations
