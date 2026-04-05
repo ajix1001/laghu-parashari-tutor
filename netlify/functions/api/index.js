@@ -166,6 +166,14 @@ function getNakshatra(moonLon) {
   return { nakshatra: nak.name, lord: nak.lord, fraction_elapsed: +frac.toFixed(6) };
 }
 
+function daysToYMD(totalDays) {
+  const years  = Math.floor(totalDays / 365.25);
+  const rem1   = totalDays - years * 365.25;
+  const months = Math.floor(rem1 / 30.4375);
+  const days   = Math.round(rem1 - months * 30.4375);
+  return { years, months, days };
+}
+
 function birthBalance(birth_date, moon_degrees) {
   const nak = getNakshatra(moon_degrees);
   const lord = nak.lord;
@@ -173,10 +181,12 @@ function birthBalance(birth_date, moon_degrees) {
   const balanceYears = dashYears * (1 - nak.fraction_elapsed);
   const balanceDays  = balanceYears * 365.25;
   return {
-    nakshatra: nak.nakshatra,
-    lord,
-    balance_years: +balanceYears.toFixed(4),
-    balance_days:  +balanceDays.toFixed(2),
+    nakshatra_name:    nak.nakshatra,
+    nakshatra_lord:    lord,
+    fraction_elapsed:  +nak.fraction_elapsed.toFixed(6),
+    balance_years:     +balanceYears.toFixed(4),
+    balance_days:      +balanceDays.toFixed(2),
+    balance_ymd:       daysToYMD(balanceDays),
   };
 }
 
@@ -229,17 +239,38 @@ function currentDasha(birth_date, moon_degrees, query_date) {
   const mIdx      = VIMSHOTTARI_SEQ.indexOf(maha.lord);
   let cursor      = new Date(mahaStart);
   let antar       = null;
+  let antarIdx    = -1;
   for (let i = 0; i < 9; i++) {
     const sub   = VIMSHOTTARI_SEQ[(mIdx + i) % 9];
     const yrs   = (VIMSHOTTARI_YEARS[maha.lord] * VIMSHOTTARI_YEARS[sub]) / TOTAL_DASHA_YEARS;
     const end   = addYears(cursor, yrs);
     if (qDate >= cursor && qDate < end) {
       antar = { sub_lord: sub, start_date: cursor.toISOString().slice(0, 10), end_date: end.toISOString().slice(0, 10) };
+      antarIdx = i;
       break;
     }
     cursor = end;
   }
-  return { mahadasha: maha, antardasha: antar };
+
+  // Compute pratyantardasha within antar
+  let pratya = null;
+  if (antar) {
+    const aIdx     = (mIdx + antarIdx) % 9;
+    let cursor2    = new Date(antar.start_date + "T00:00:00Z");
+    const antarYrs = (VIMSHOTTARI_YEARS[maha.lord] * VIMSHOTTARI_YEARS[antar.sub_lord]) / TOTAL_DASHA_YEARS;
+    for (let i = 0; i < 9; i++) {
+      const sub2 = VIMSHOTTARI_SEQ[(aIdx + i) % 9];
+      const yrs2 = (antarYrs * VIMSHOTTARI_YEARS[sub2]) / TOTAL_DASHA_YEARS;
+      const end2 = addYears(cursor2, yrs2);
+      if (qDate >= cursor2 && qDate < end2) {
+        pratya = { sub2_lord: sub2, start_date: cursor2.toISOString().slice(0, 10), end_date: end2.toISOString().slice(0, 10) };
+        break;
+      }
+      cursor2 = end2;
+    }
+  }
+
+  return { mahadasha: maha, antardasha: antar, pratyantardasha: pratya };
 }
 
 function antardashaList(major_lord, mahadasha_start, partial_balance_days) {
@@ -247,10 +278,17 @@ function antardashaList(major_lord, mahadasha_start, partial_balance_days) {
   let cursor  = new Date(mahadasha_start + "T00:00:00Z");
   const list  = [];
   for (let i = 0; i < 9; i++) {
-    const sub  = VIMSHOTTARI_SEQ[(mIdx + i) % 9];
-    const yrs  = (VIMSHOTTARI_YEARS[major_lord] * VIMSHOTTARI_YEARS[sub]) / TOTAL_DASHA_YEARS;
-    const end  = addYears(cursor, yrs);
-    list.push({ sub_lord: sub, start_date: cursor.toISOString().slice(0, 10), end_date: end.toISOString().slice(0, 10), years: +yrs.toFixed(4) });
+    const sub      = VIMSHOTTARI_SEQ[(mIdx + i) % 9];
+    const yrs      = (VIMSHOTTARI_YEARS[major_lord] * VIMSHOTTARI_YEARS[sub]) / TOTAL_DASHA_YEARS;
+    const totalDays = yrs * 365.25;
+    const end      = addYears(cursor, yrs);
+    list.push({
+      sub_lord:     sub,
+      start_date:   cursor.toISOString().slice(0, 10),
+      end_date:     end.toISOString().slice(0, 10),
+      years:        +yrs.toFixed(4),
+      duration_ymd: daysToYMD(totalDays),
+    });
     cursor = end;
   }
   return { antardashas: list };
@@ -282,7 +320,7 @@ function housesOfPlanet(planet, lagna) {
 
 function evaluatePlanet(planet, lagna) {
   const houses = housesOfPlanet(planet, lagna);
-  if (!houses.length) return { planet, nature: "Neutral", score: 0, houses, notes: [] };
+  if (!houses.length) return { planet, functional_nature: "Neutral", nature: "Neutral", score: 0, owned_houses: houses, houses, notes: [] };
 
   let score = 0;
   const notes = [];
@@ -293,57 +331,61 @@ function evaluatePlanet(planet, lagna) {
     if (TRISHADAYA.has(h)) { score -= 2; notes.push(`Lord of trishadaya ${h}`); }
     if (h === 8 && !houses.includes(1)) { score -= 2; notes.push("Lord of 8th (dusthana)"); }
     if (MARAKA.has(h)) { score -= 1; notes.push(`Maraka lord of ${h}`); }
-    // Kendradhipati dosha
     if (KENDRA.has(h) && NAT_BENEFICS.has(planet)) { score -= 1; notes.push(`Kendradhipati dosha (benefic in kendra ${h})`); }
     if (KENDRA.has(h) && NAT_MALEFICS.has(planet)) { score += 1; notes.push(`Kendradhipati relief (malefic in kendra ${h})`); }
   }
 
-  // Yoga Karaka: owns both kendra AND trikona (not lagna alone)
   const ownedKendras  = houses.filter(h => KENDRA.has(h) && h !== 1);
   const ownedTrikonas = houses.filter(h => TRIKONA.has(h) && h !== 1);
   const isYogaKaraka  = ownedKendras.length > 0 && ownedTrikonas.length > 0;
   if (isYogaKaraka) { score += 3; notes.push("Yoga Karaka!"); }
-
-  // Floor lagna lord score at 2
   if (houses.includes(1) && score < 2) score = 2;
 
   let nature;
-  if (isYogaKaraka) nature = "Yoga Karaka";
+  if (isYogaKaraka)   nature = "Yoga Karaka";
   else if (score >= 3) nature = "Auspicious";
   else if (score >= 1) nature = "Mixed";
   else if (score === 0) nature = "Neutral";
   else if (score >= -1) nature = "Maraka";
-  else nature = "Inauspicious";
+  else                 nature = "Inauspicious";
 
-  return { planet, nature, score, houses, notes, is_yoga_karaka: isYogaKaraka };
+  return { planet, functional_nature: nature, nature, score, owned_houses: houses, houses, notes, is_yoga_karaka: isYogaKaraka };
 }
 
 function lagnaProfile(lagna) {
-  const results = {};
   const allPlanets = ["Sun","Moon","Mars","Mercury","Jupiter","Venus","Saturn"];
-  for (const p of allPlanets) {
-    results[p] = evaluatePlanet(p, lagna);
-  }
-  return { lagna, planet_evaluations: results };
+  // Return as array (frontend uses .forEach) with functional_nature + owned_houses fields
+  const planet_evaluations = allPlanets.map(p => evaluatePlanet(p, lagna));
+  return { lagna, planet_evaluations };
 }
 
 // ─── Yoga analysis ────────────────────────────────────────────────────────────
 function yogaAnalysis(lagna, planet_positions) {
-  const lagnaIdx = SIGN_IDX[lagna];
-  const posMap   = Object.fromEntries(planet_positions.map(p => [p.planet, p.house]));
+  const posMap   = Object.fromEntries((planet_positions||[]).map(p => [p.planet, p.house]));
+  const raja_yogas = [];
+  const marakas    = [];
 
-  const yogas  = [];
-  const marakas = [];
-
-  // Check Yoga Karakas
   const allP = ["Sun","Moon","Mars","Mercury","Jupiter","Venus","Saturn"];
   for (const p of allP) {
-    const eval_ = evaluatePlanet(p, lagna);
-    if (eval_.is_yoga_karaka) yogas.push({ type: "Yoga Karaka", planet: p, description: `${p} owns a kendra and a trikona for ${lagna} lagna` });
-    if (eval_.nature === "Maraka") marakas.push({ planet: p, houses: eval_.houses });
+    const ev = evaluatePlanet(p, lagna);
+    if (ev.is_yoga_karaka) {
+      raja_yogas.push({
+        yoga_type:      "Yoga Karaka",
+        sambandha_type: "Single-planet",
+        planets:        [p],
+        description:    `${p} owns both a kendra and a trikona for ${lagna} lagna, making it the most powerful planet.`,
+      });
+    }
+    if (ev.nature === "Maraka") {
+      marakas.push({
+        planet:      p,
+        severity:    "Primary",
+        description: `${p} rules the ${ev.owned_houses.join(" & ")} house(s), maraka positions for ${lagna} lagna.`,
+      });
+    }
   }
 
-  // Raja yoga: kendra lord + trikona lord in same house (conjunction)
+  // Raja yoga by conjunction
   const houseToPlants = {};
   for (const [p, h] of Object.entries(posMap)) {
     if (!houseToPlants[h]) houseToPlants[h] = [];
@@ -353,13 +395,18 @@ function yogaAnalysis(lagna, planet_positions) {
     if (planets.length < 2) continue;
     const kendraLords  = planets.filter(p => housesOfPlanet(p, lagna).some(hh => KENDRA.has(hh) && hh !== 1));
     const trikonaLords = planets.filter(p => housesOfPlanet(p, lagna).some(hh => TRIKONA.has(hh) && hh !== 1));
-    const conjuncted   = kendraLords.filter(p => trikonaLords.includes(p) === false && trikonaLords.length > 0);
-    if (kendraLords.length > 0 && trikonaLords.length > 0) {
-      yogas.push({ type: "Raja Yoga", planets: planets.join("+"), house: +h, description: `Kendra lord(s) and trikona lord(s) conjunct in house ${h}` });
+    const kl = kendraLords.filter(p => !trikonaLords.includes(p));
+    if (kl.length > 0 && trikonaLords.length > 0) {
+      raja_yogas.push({
+        yoga_type:      "Raja Yoga",
+        sambandha_type: "Conjunction",
+        planets:        [...new Set([...kl, ...trikonaLords])],
+        description:    `Kendra lord(s) ${kl.join("+")} and trikona lord(s) ${trikonaLords.join("+")} conjunct in house ${h}.`,
+      });
     }
   }
 
-  return { lagna, yogas, marakas };
+  return { lagna, raja_yogas, marakas };
 }
 
 // ─── Ascendant profiles ───────────────────────────────────────────────────────
@@ -407,22 +454,41 @@ function interpretDasha(lagna, maha_lord, antar_lord) {
   const mahaQ     = QUALITY_MAP[mahaEval.nature] || QUALITY_MAP.Neutral;
   const antarQ    = antarEval ? (QUALITY_MAP[antarEval.nature] || QUALITY_MAP.Neutral) : null;
 
-  const mahaH  = mahaEval.houses.join(" & ");
-  const mahaS  = PLANET_SIGNIFICATIONS[maha_lord] || maha_lord;
-  let text = `The ${maha_lord} Mahadasha is ${mahaQ.label} for ${lagna} lagna. `;
-  text += `${maha_lord} rules the ${mahaH} house(s), bringing themes of ${HOUSE_SIGNIFICATIONS[mahaEval.houses[0]] || "life"} and signifying ${mahaS}. `;
-  if (mahaEval.is_yoga_karaka) text += `As Yoga Karaka, this is one of the most powerful periods. `;
+  const mahaH = mahaEval.owned_houses.join(" & ");
+  const mahaS = PLANET_SIGNIFICATIONS[maha_lord] || maha_lord;
 
+  let combined = `The <strong>${maha_lord} Mahadasha</strong> is <em>${mahaQ.label}</em> for ${lagna} lagna. `;
+  combined += `${maha_lord} rules the ${mahaH} house(s), activating themes of <em>${HOUSE_SIGNIFICATIONS[mahaEval.owned_houses[0]] || "life"}</em> `;
+  combined += `and signifies ${mahaS}. `;
+  if (mahaEval.is_yoga_karaka) combined += `As <strong>Yoga Karaka</strong>, this is one of the most powerful dasha periods. `;
   if (antarEval && antar_lord) {
-    const antarH = antarEval.houses.join(" & ");
-    text += `During the ${antar_lord} Antardasha (${antarQ.label}), emphasis shifts to the ${antarH} house, `;
-    text += `activating themes of ${HOUSE_SIGNIFICATIONS[antarEval.houses[0]] || "life"}.`;
+    const antarH = antarEval.owned_houses.join(" & ");
+    combined += `During the <strong>${antar_lord} Antardasha</strong> (${antarQ.label}), emphasis shifts to the ${antarH} house, `;
+    combined += `activating <em>${HOUSE_SIGNIFICATIONS[antarEval.owned_houses[0]] || "life"}</em>.`;
+  }
+
+  // Areas activated
+  const areas_activated = [
+    ...mahaEval.owned_houses.map(h => HOUSE_SIGNIFICATIONS[h]),
+    ...(antarEval ? antarEval.owned_houses.map(h => HOUSE_SIGNIFICATIONS[h]) : []),
+  ].filter(Boolean);
+
+  // Cautions for dusthana houses
+  const cautions = [];
+  const dusthana = new Set([6, 8, 12]);
+  for (const h of mahaEval.owned_houses) {
+    if (dusthana.has(h)) cautions.push(`${maha_lord} rules the ${h}th house (dusthana) — challenges in ${HOUSE_SIGNIFICATIONS[h]} possible.`);
   }
 
   return {
-    summary: text,
-    mahadasha_nature: mahaEval.nature,
-    mahadasha_color:  mahaQ.color,
+    quality:           mahaEval.nature,
+    quality_color:     mahaQ.color.replace("#", ""),
+    combined,
+    areas_activated,
+    cautions,
+    summary:           combined,
+    mahadasha_nature:  mahaEval.nature,
+    mahadasha_color:   mahaQ.color,
     antardasha_nature: antarEval?.nature || null,
     antardasha_color:  antarQ?.color || null,
   };
@@ -430,15 +496,17 @@ function interpretDasha(lagna, maha_lord, antar_lord) {
 
 function interpretLagna(lagna) {
   const profile = ASCENDANT_PROFILES[lagna];
-  if (!profile) return { summary: `No profile for ${lagna}.` };
+  if (!profile) return { narrative: `No profile for ${lagna}.`, summary: `No profile for ${lagna}.` };
   return {
     lagna,
-    lagna_lord: profile.lagna_lord,
-    summary: profile.notes,
-    auspicious: profile.auspicious,
+    lagna_lord:   profile.lagna_lord,
+    narrative:    profile.notes,
+    summary:      profile.notes,
+    auspicious:   profile.auspicious,
     inauspicious: profile.inauspicious,
-    yoga_karaka: profile.yoga_karaka,
-    marakas: profile.marakas,
+    yoga_karaka:  profile.yoga_karaka,
+    marakas:      profile.marakas,
+    notes:        profile.notes,
   };
 }
 
