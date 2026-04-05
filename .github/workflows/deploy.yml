@@ -1,0 +1,38 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies into function bundle
+        run: |
+          pip install -r requirements.txt --target netlify/functions/lib --upgrade
+          # Remove dist-info to keep bundle lean
+          find netlify/functions/lib -name "*.dist-info" -type d -exec rm -rf {} + 2>/dev/null || true
+          find netlify/functions/lib -name "*.pyi" -delete 2>/dev/null || true
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify (frontend + functions)
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID:    ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          netlify deploy \
+            --prod \
+            --dir=frontend \
+            --functions=netlify/functions \
+            --message="Deployed from GitHub Actions"
