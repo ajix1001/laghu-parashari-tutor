@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Laghu Parashari Tutor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&family=IM+Fell+English+SC&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<script>tailwind.config={theme:{extend:{colors:{'parchment':'#f4ead5','aged-paper':'#e8dcc4','sepia-dark':'#4b3621','ochre':'#cc7722','earth-red':'#8b0000','indigo-ink':'#2e3b55','gold-leaf':'#d4af37'},fontFamily:{oracle:['Cinzel Decorative','serif'],scribe:['Crimson Pro','serif'],header:['IM Fell English SC','serif']}}}}</script>
+<style>
+:root{--scroll-bg:#f4ead5}
+body{background-color:#2b1d0e;background-image:url(https://lh3.googleusercontent.com/aida-public/AB6AXuD-fnef6hA_KkgQzzwJ2JHBVagMSDzSWu0d1LIGt6eOVjPZ1O81WedOV-ZO6eYSb5gLV4Kqcp1VnBQ_5X9V3XYGdk36zlW7eCdD-45Ow5Ad8dFEmuk0gVTzp7o7lBD7SsjZP7Io2eH03v3Bg6TLt9Zfe6nLzJxfdV35PcgW9XwYdU752B3kC3FYp7KY1bEtNwrUZfG6aTJlxTvwAs-HTOgqElmS7B-fsaEtVWuw5uj4MHKZ9vk7p9gQVLwaW_Itxr5UyuSffZ5T8T7B);font-family:'Crimson Pro',serif;color:#4b3621}
+.scroll{background-color:var(--scroll-bg);background-image:url(https://lh3.googleusercontent.com/aida-public/AB6AXuBxPtOqR5miIO_yqSEmr-dghh35mH0pRh5Mp7XdbyxLlvvTAiUwknPqfCK-Oqv2rMmyGEgK7QJsStlt1e833SjBHOSTFMO0H0Y0dDhCEwYwRSFDDlr6Kb7UJsZtPBEygYW12iKLOhQAkub-XSbU3Z0ULCNGANZRC2_6fHFTuGRn7rlj9fJilN6WyARoqb5V8Ulw5PuZS_9YzB92efMWLp4RBJ3N3kPn4LkaFJy7v_RAejtMauGpeM4fUjrtyYVLeDgW9hIUh1vg0y5A);box-shadow:0 0 50px rgba(0,0,0,.5),inset 0 0 100px rgba(139,69,19,.1);border-left:12px solid #5d4037;border-right:12px solid #5d4037}
+.divider{height:2px;background:linear-gradient(90deg,transparent,#8b0000,transparent);margin:1.5rem 0}
+.ink-bleed{text-shadow:.5px .5px 1px rgba(0,0,0,.2)}
+.inp{background:rgba(244,234,213,.7);border:1px solid rgba(75,54,33,.3);color:#4b3621;font-family:'IM Fell English SC',serif;font-size:.82rem;padding:.45rem .7rem;outline:none;transition:border-color .2s;width:100%}
+.inp:focus{border-color:#8b0000;box-shadow:0 0 0 2px rgba(139,0,0,.08)}
+.inp option{background:#f4ead5;color:#4b3621}
+.obtn{background:linear-gradient(135deg,#8b0000,#4b3621);color:#f4ead5;font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;padding:.6rem 1.75rem;border:1px solid rgba(212,175,55,.4);cursor:pointer;transition:all .2s}
+.obtn:hover{background:linear-gradient(135deg,#a00000,#5d4037);border-color:#d4af37}
+.obtn:disabled{opacity:.45;cursor:not-allowed}
+.obtn.sm{padding:.35rem 1rem;font-size:.62rem}
+.obtn.ghost{background:transparent;color:#8b0000;border:1px solid rgba(139,0,0,.3)}
+.obtn.ghost:hover{background:rgba(139,0,0,.06)}
+.tab-btn{font-family:'IM Fell English SC',serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;padding:.5rem 1.1rem;border-bottom:2px solid transparent;transition:all .2s;cursor:pointer;white-space:nowrap;background:none;color:rgba(75,54,33,.5)}
+.tab-btn.active{border-bottom-color:#8b0000;color:#8b0000}
+.tab-btn:hover:not(.active){color:#4b3621}
+.lesson-card{border:1px solid rgba(75,54,33,.15);background:rgba(232,220,196,.3);transition:all .2s;cursor:pointer;padding:1rem;text-align:center}
+.lesson-card:hover{background:rgba(232,220,196,.55);border-color:rgba(139,0,0,.3)}
+.lesson-card.active{background:rgba(139,0,0,.07);border-color:rgba(139,0,0,.45)}
+.rule-box{border-left:4px solid #8b0000;background:rgba(139,0,0,.04);padding:.9rem 1.1rem;margin:.75rem 0}
+.rule-box.gold{border-left-color:#d4af37;background:rgba(212,175,55,.06)}
+.rule-box.indigo{border-left-color:#2e3b55;background:rgba(46,59,85,.05)}
+.rule-box.green{border-left-color:#2a6000;background:rgba(42,96,0,.05)}
+.rule-box.red{border-left-color:#8b0000;background:rgba(139,0,0,.07)}
+.b-yk{background:rgba(212,175,55,.2);color:#6b4c00;border:1px solid rgba(212,175,55,.5);font-size:.6rem;padding:.1rem .35rem;border-radius:2px}
+.b-aus{background:rgba(46,59,85,.12);color:#2e3b55;border:1px solid rgba(46,59,85,.25);font-size:.6rem;padding:.1rem .35rem;border-radius:2px}
+.b-inas{background:rgba(139,0,0,.1);color:#8b0000;border:1px solid rgba(139,0,0,.3);font-size:.6rem;padding:.1rem .35rem;border-radius:2px}
+.b-mara{background:rgba(75,54,33,.12);color:#4b3621;border:1px solid rgba(75,54,33,.35);font-size:.6rem;padding:.1rem .35rem;border-radius:2px}
+.b-mix{background:rgba(100,80,40,.1);color:#5a4020;border:1px solid rgba(100,80,40,.3);font-size:.6rem;padding:.1rem .35rem;border-radius:2px}
+.b-neu{background:rgba(204,119,34,.1);color:#7a4a00;border:1px solid rgba(204,119,34,.3);font-size:.6rem;padding:.1rem .35rem;border-radius:2px}
+.answer{display:none;margin-top:.5rem;padding:.75rem;background:rgba(46,59,85,.06);border:1px solid rgba(46,59,85,.15);font-style:italic;font-size:.9rem}
+.prog-bar{height:3px;background:rgba(139,0,0,.12);border-radius:2px}
+.prog-fill{height:100%;background:#8b0000;border-radius:2px;transition:width .4s}
+.score-badge{display:inline-flex;align-items:center;gap:.3rem;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;padding:.25rem .6rem;border-radius:2px}
+.score-badge.pass{background:rgba(42,96,0,.12);color:#2a6000;border:1px solid rgba(42,96,0,.3)}
+.score-badge.fail{background:rgba(139,0,0,.1);color:#8b0000;border:1px solid rgba(139,0,0,.25)}
+.dtable th{font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.08em;color:#2e3b55;padding:.35rem .55rem;border-bottom:2px solid rgba(75,54,33,.2);text-align:left;white-space:nowrap}
+.dtable td{font-size:.82rem;padding:.35rem .55rem;border-bottom:1px solid rgba(75,54,33,.1)}
+.dtable tr.hi td{background:rgba(139,0,0,.07);font-weight:600;color:#8b0000}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1.8s linear infinite;display:inline-block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fadeIn .35s ease forwards}
+.quality-gold{background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.5);color:#6b4c00}
+.quality-indigo{background:rgba(46,59,85,.1);border:1px solid rgba(46,59,85,.3);color:#2e3b55}
+.quality-ochre{background:rgba(204,119,34,.12);border:1px solid rgba(204,119,34,.35);color:#7a4a00}
+.quality-red{background:rgba(139,0,0,.1);border:1px solid rgba(139,0,0,.3);color:#8b0000}
+/* Saved chart pill */
+.chart-pill{display:flex;align-items:center;gap:.5rem;padding:.4rem .7rem;background:rgba(244,234,213,.8);border:1px solid rgba(75,54,33,.2);font-size:.8rem;cursor:pointer;transition:all .2s}
+.chart-pill:hover{background:rgba(244,234,213,1);border-color:#8b0000}
+/* Geocode dropdown */
+#geoDropdown li{padding:.45rem .7rem;font-family:'IM Fell English SC',serif;font-size:.78rem;color:#4b3621;cursor:pointer;border-bottom:1px solid rgba(75,54,33,.1);list-style:none}
+#geoDropdown li:hover{background:rgba(139,0,0,.06);color:#8b0000}
+#geoDropdown li.geo-none{cursor:default;color:rgba(75,54,33,.4);font-style:italic}
+</style>
+</head>
+<body>
+
+<!-- Side nav -->
+<nav class="fixed left-0 top-0 h-full w-14 hidden lg:flex flex-col items-center justify-center gap-8 z-50">
+  <button onclick="goTab('learn')" title="Curriculum" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">menu_book</span></button>
+  <button onclick="goTab('chart')" title="Your Chart" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">manage_search</span></button>
+  <button onclick="goTab('saved')" title="Saved Charts" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">bookmark</span></button>
+  <button onclick="goTab('ref')" title="Reference" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">library_books</span></button>
+</nav>
+
+<div class="max-w-4xl mx-auto scroll min-h-screen relative py-14 px-6 md:px-16 overflow-hidden">
+  <div class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-[#5d4037] to-transparent opacity-20 pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#5d4037] to-transparent opacity-20 pointer-events-none"></div>
+
+  <!-- Header -->
+  <header class="text-center mb-8">
+    <h1 class="font-oracle text-4xl md:text-6xl text-earth-red tracking-tighter ink-bleed mb-1">Laghu Parashari Tutor</h1>
+    <p class="font-header text-sm tracking-[.25em] text-indigo-ink">Classical Jyotisha · Vimshottari Dasha · Swiss Ephemeris</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- Progress bar -->
+  <div class="prog-bar mb-1"><div id="progFill" class="prog-fill" style="width:20%"></div></div>
+  <p id="progLabel" class="font-header text-[9px] tracking-widest text-sepia-dark/40 text-right mb-5">Lesson 1 of 5 · 0% Quiz Score</p>
+
+  <!-- Tabs -->
+  <div class="flex gap-0 border-b-2 border-sepia-dark/15 mb-7 overflow-x-auto">
+    <button class="tab-btn active" id="tab-learn" onclick="goTab('learn')">📖 Curriculum</button>
+    <button class="tab-btn" id="tab-chart"  onclick="goTab('chart')">✦ Your Chart</button>
+    <button class="tab-btn" id="tab-saved"  onclick="goTab('saved')">🔖 Saved Charts</button>
+    <button class="tab-btn" id="tab-ref"    onclick="goTab('ref')">📋 Reference</button>
+  </div>
+
+  <!-- ═══ TAB: CURRICULUM ══════════════════════════════════════════════════ -->
+  <div id="pane-learn">
+    <div class="grid grid-cols-5 gap-2 mb-8" id="lessonCards"></div>
+    <div id="lessonArea"></div>
+  </div>
+
+  <!-- ═══ TAB: YOUR CHART ══════════════════════════════════════════════════ -->
+  <div id="pane-chart" class="hidden">
+
+    <!-- Input form -->
+    <div class="bg-aged-paper/40 border border-sepia-dark/15 p-6 mb-7">
+      <p class="font-header text-earth-red text-xs tracking-widest mb-4">Natal Details</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Name</label>
+          <input id="cName" class="inp" placeholder="Native's name" value="Student"/>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Date of Birth</label>
+          <input id="cDate" type="date" class="inp" value="1990-01-01"/>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Hour (0-23)</label>
+            <input id="cHour" type="number" min="0" max="23" class="inp" value="12"/>
+          </div>
+          <div>
+            <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Minute</label>
+            <input id="cMin" type="number" min="0" max="59" class="inp" value="0"/>
+          </div>
+        </div>
+        <!-- Location search spanning full width -->
+        <div class="col-span-2 md:col-span-3">
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Place of Birth</label>
+          <div class="relative">
+            <div class="flex gap-2">
+              <input id="cPlace" class="inp flex-1" placeholder="Type city or place and press Search…" value="New Delhi, India"
+                     onkeydown="if(event.key==='Enter'){event.preventDefault();geocodePlace();}"/>
+              <button type="button" onclick="geocodePlace()" class="obtn sm whitespace-nowrap">Search</button>
+            </div>
+            <ul id="geoDropdown" class="hidden absolute z-50 w-full mt-1 border border-sepia-dark/25 bg-parchment shadow-lg max-h-52 overflow-y-auto"></ul>
+          </div>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Latitude (°N positive)</label>
+          <input id="cLat" type="number" step="0.0001" class="inp" value="28.6139"/>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Longitude (°E positive)</label>
+          <input id="cLon" type="number" step="0.0001" class="inp" value="77.2090"/>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">UTC Offset (hrs)</label>
+          <input id="cTZ" type="number" step="0.5" class="inp" value="5.5"/>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Query Date (Dasha)</label>
+          <input id="cQuery" type="date" class="inp"/>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <button id="calcBtn" onclick="calcChart()" class="obtn">Cast Chart</button>
+        <button onclick="saveChart()" class="obtn ghost sm">Save Chart</button>
+        <span id="calcLoader" class="hidden text-earth-red font-header text-[10px] tracking-widest">
+          <span class="spin material-symbols-outlined text-lg">brightness_5</span> Consulting the heavens…
+        </span>
+        <span id="calcErr" class="hidden font-header text-[10px] text-earth-red tracking-wide"></span>
+        <span id="saveMsg" class="hidden font-header text-[10px] text-green-800 tracking-wide">Chart saved.</span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="chartResults" class="hidden fi space-y-7">
+
+      <!-- Row 1: Kundali + Planets -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Kundali diagram -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <p class="font-header text-earth-red text-xs tracking-widest">Kundali</p>
+            <div class="flex gap-1">
+              <button id="btnNorth" onclick="switchKundali('north')" class="obtn sm" style="padding:.25rem .65rem;font-size:.55rem">North Indian</button>
+              <button id="btnSouth" onclick="switchKundali('south')" class="obtn ghost sm" style="padding:.25rem .65rem;font-size:.55rem">South Indian</button>
+            </div>
+          </div>
+          <div id="kundaliSvg" class="border border-sepia-dark/20 bg-aged-paper/30"></div>
+          <p id="lagnaAyanamsa" class="font-header text-[9px] opacity-50 mt-1 tracking-wide text-center"></p>
+        </div>
+        <!-- Planet table -->
+        <div>
+          <p class="font-header text-earth-red text-xs tracking-widest mb-2">Planetary Positions</p>
+          <div class="overflow-x-auto">
+            <table class="w-full dtable text-xs">
+              <thead><tr><th>Planet</th><th>Sign</th><th>Deg</th><th>House</th><th>R</th></tr></thead>
+              <tbody id="planetTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Nakshatra + Balance -->
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">Birth Nakshatra & Dasha Balance</p>
+        <div class="grid grid-cols-3 gap-3 mb-2">
+          <div class="bg-aged-paper/50 border border-sepia-dark/10 p-3 text-center">
+            <span id="rNakSym" class="text-3xl block mb-1">☾</span>
+            <p id="rNakName" class="font-oracle text-base text-earth-red">—</p>
+            <p class="font-header text-[8px] opacity-50 tracking-widest">Nakshatra</p>
+          </div>
+          <div class="bg-aged-paper/50 border border-sepia-dark/10 p-3 text-center">
+            <p id="rNakLord" class="font-oracle text-xl text-indigo-ink">—</p>
+            <p class="font-header text-[8px] opacity-50 tracking-widest">Dasha Lord</p>
+          </div>
+          <div class="bg-aged-paper/50 border border-sepia-dark/10 p-3 text-center">
+            <p id="rBalYMD" class="font-oracle text-lg text-earth-red">—</p>
+            <p class="font-header text-[8px] opacity-50 tracking-widest">Balance at Birth</p>
+          </div>
+        </div>
+        <div id="rNakExplain" class="rule-box indigo font-scribe italic text-sm"></div>
+      </div>
+
+      <!-- Row 3: Running Dashas + Interpretation -->
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">Running Dashas</p>
+        <div class="grid grid-cols-3 gap-3 mb-3">
+          <div class="bg-aged-paper/50 border border-sepia-dark/10 p-3">
+            <p class="font-header text-[8px] tracking-widest text-indigo-ink mb-1">Mahadasha</p>
+            <p id="rMaha" class="font-oracle text-base text-earth-red">—</p>
+            <p id="rMahaDates" class="font-header text-[8px] opacity-50 mt-1">—</p>
+          </div>
+          <div class="bg-aged-paper/50 border border-sepia-dark/10 p-3">
+            <p class="font-header text-[8px] tracking-widest text-indigo-ink mb-1">Antardasha</p>
+            <p id="rAntar" class="font-oracle text-base text-earth-red">—</p>
+            <p id="rAntarDates" class="font-header text-[8px] opacity-50 mt-1">—</p>
+          </div>
+          <div class="bg-aged-paper/50 border border-sepia-dark/10 p-3">
+            <p class="font-header text-[8px] tracking-widest text-indigo-ink mb-1">Pratyantardasha</p>
+            <p id="rPratya" class="font-oracle text-base text-earth-red">—</p>
+            <p id="rPratyaDates" class="font-header text-[8px] opacity-50 mt-1">—</p>
+          </div>
+        </div>
+        <!-- Dasha Interpretation -->
+        <div id="rInterpBlock" class="hidden">
+          <div id="rInterpQuality" class="font-header text-xs tracking-widest px-3 py-2 mb-2"></div>
+          <div id="rInterpCombined" class="rule-box font-scribe text-sm mb-2"></div>
+          <div id="rInterpAreas" class="font-header text-[9px] tracking-widest text-indigo-ink mb-1"></div>
+          <div id="rInterpCautions" class="space-y-1"></div>
+        </div>
+        <div id="rAntarTable" class="mt-3 overflow-x-auto"></div>
+      </div>
+
+      <!-- Row 4: Lagna Profile -->
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">Lagna Profile</p>
+        <div id="rLagnaNarrative" class="rule-box gold font-scribe italic text-sm mb-3"></div>
+        <div id="rLagnaGrid" class="grid grid-cols-3 md:grid-cols-4 gap-2 mb-2"></div>
+      </div>
+
+      <!-- Row 5: Yogas + Marakas -->
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">Raja Yogas & Marakas</p>
+        <div id="rYogaList" class="space-y-2 mb-3"></div>
+        <div id="rMarakaList" class="space-y-2"></div>
+      </div>
+
+      <!-- Row 6: Full Timeline -->
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">120-Year Vimshottari Timeline</p>
+        <div class="overflow-x-auto">
+          <table class="w-full dtable">
+            <thead><tr><th>Lord</th><th>Yrs</th><th>Start</th><th>End</th></tr></thead>
+            <tbody id="rTimeline"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /chartResults -->
+  </div><!-- /pane-chart -->
+
+  <!-- ═══ TAB: SAVED CHARTS ════════════════════════════════════════════════ -->
+  <div id="pane-saved" class="hidden">
+    <div class="flex items-center justify-between mb-4">
+      <p class="font-header text-earth-red text-xs tracking-widest">Saved Natal Charts</p>
+      <button onclick="loadSavedCharts()" class="obtn sm ghost">Refresh</button>
+    </div>
+    <div id="savedList" class="space-y-2"></div>
+  </div>
+
+  <!-- ═══ TAB: REFERENCE ═══════════════════════════════════════════════════ -->
+  <div id="pane-ref" class="hidden">
+
+    <section class="mb-8">
+      <p class="font-header text-earth-red text-xs tracking-widest mb-3">Vimshottari Sequence & Antardasha Table</p>
+      <div class="overflow-x-auto mb-5">
+        <table class="w-full dtable text-xs">
+          <thead><tr><th>Planet</th><th>Symbol</th><th>Dasha Yrs</th><th>Ruling Nakshatras</th></tr></thead>
+          <tbody>
+            <tr><td>Ketu</td><td>☋</td><td>7</td><td>Ashwini · Magha · Mula</td></tr>
+            <tr><td>Venus</td><td>♀</td><td>20</td><td>Bharani · Purva Phalguni · Purva Ashadha</td></tr>
+            <tr><td>Sun</td><td>☉</td><td>6</td><td>Krittika · Uttara Phalguni · Uttara Ashadha</td></tr>
+            <tr><td>Moon</td><td>☾</td><td>10</td><td>Rohini · Hasta · Shravana</td></tr>
+            <tr><td>Mars</td><td>♂</td><td>7</td><td>Mrigashira · Chitra · Dhanishtha</td></tr>
+            <tr><td>Rahu</td><td>☊</td><td>18</td><td>Ardra · Swati · Shatabhisha</td></tr>
+            <tr><td>Jupiter</td><td>♃</td><td>16</td><td>Punarvasu · Vishakha · Purva Bhadrapada</td></tr>
+            <tr><td>Saturn</td><td>♄</td><td>19</td><td>Pushya · Anuradha · Uttara Bhadrapada</td></tr>
+            <tr><td>Mercury</td><td>☿</td><td>17</td><td>Ashlesha · Jyeshtha · Revati</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="refAntarTable"><p class="font-header text-[9px] opacity-50 tracking-widest">Loading from API…</p></div>
+    </section>
+
+    <section class="mb-8">
+      <p class="font-header text-earth-red text-xs tracking-widest mb-3">Ascendant Profiles</p>
+      <select id="refLagna" class="inp mb-3 max-w-xs" onchange="loadRefProfile()">
+        <option>Aries</option><option>Taurus</option><option>Gemini</option><option>Cancer</option>
+        <option>Leo</option><option>Virgo</option><option>Libra</option><option>Scorpio</option>
+        <option>Sagittarius</option><option>Capricorn</option><option>Aquarius</option><option>Pisces</option>
+      </select>
+      <div id="refProfileOut"></div>
+    </section>
+
+    <section class="mb-8">
+      <p class="font-header text-earth-red text-xs tracking-widest mb-3">House Categories</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+        <div class="rule-box"><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Trikona</p><p class="font-oracle text-2xl mb-1">1·5·9</p><p class="text-xs opacity-70">Dharma trines. Lords always auspicious.</p></div>
+        <div class="rule-box"><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Kendra</p><p class="font-oracle text-2xl mb-1">1·4·7·10</p><p class="text-xs opacity-70">Angular. Kendradhipati Dosha applies.</p></div>
+        <div class="rule-box"><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Trishadaya</p><p class="font-oracle text-2xl mb-1">3·6·11</p><p class="text-xs opacity-70">Upachaya dusthanas. Lords inauspicious.</p></div>
+        <div class="rule-box gold"><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Maraka Sthana</p><p class="font-oracle text-2xl mb-1">2·7</p><p class="text-xs opacity-70">12th from longevity houses. Death-inflicting.</p></div>
+      </div>
+    </section>
+
+  </div><!-- /pane-ref -->
+
+  <footer class="text-center mt-14 pb-12 border-t border-sepia-dark/10 pt-6">
+    <p class="font-oracle text-sm text-sepia-dark/40 mb-1">© MMXXIV Aetheris Jyotish</p>
+    <p class="font-header text-[9px] uppercase tracking-[.4em] text-earth-red">Written in the Eternal Ink of the Heavens</p>
+  </footer>
+</div><!-- /scroll -->
+
+<script>
+const API=location.hostname==='localhost'||location.hostname==='127.0.0.1'?'http://localhost:8000':'/api';
+const SYM={Sun:'☉',Moon:'☾',Mars:'♂',Mercury:'☿',Jupiter:'♃',Venus:'♀',Saturn:'♄',Rahu:'☊',Ketu:'☋'};
+const DYRS={Ketu:7,Venus:20,Sun:6,Moon:10,Mars:7,Rahu:18,Jupiter:16,Saturn:19,Mercury:17};
+const PLANETS=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let quizScores = JSON.parse(localStorage.getItem('quizScores')||'{}');   // {lesson: {correct,total}}
+let activeChartId = null;
+let lastChart = null;  // last computed chart data
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function goTab(t){
+  ['learn','chart','saved','ref'].forEach(id=>{
+    document.getElementById('pane-'+id).classList.toggle('hidden',id!==t);
+    const btn=document.getElementById('tab-'+id);
+    if(btn) btn.classList.toggle('active',id===t);
+  });
+  if(t==='ref')   loadRefData();
+  if(t==='saved') loadSavedCharts();
+}
+
+// ── Utilities ──────────────────────────────────────────────────────────────────
+async function apiFetch(path,method='GET',body){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(API+path,opts);
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||r.statusText);}
+  return r.json();
+}
+
+function fmtYMD(y){
+  const p=[];
+  if(y.years)  p.push(y.years+'y');
+  if(y.months) p.push(y.months+'m');
+  if(y.days)   p.push(y.days+'d');
+  return p.join(' ')||'0d';
+}
+
+function nb(nature){
+  return ({
+    'Yoga Karaka':{cls:'b-yk',l:'YK'},'Auspicious':{cls:'b-aus',l:'Aus'},
+    'Inauspicious':{cls:'b-inas',l:'Inas'},'Maraka':{cls:'b-mara',l:'Mara'},
+    'Mixed':{cls:'b-mix',l:'Mixed'},'Neutral':{cls:'b-neu',l:'Neu'},
+  })[nature]||{cls:'b-neu',l:nature};
+}
+
+function setLoading(on){
+  document.getElementById('calcBtn').disabled=on;
+  document.getElementById('calcLoader').classList.toggle('hidden',!on);
+}
+function showErr(msg){
+  const e=document.getElementById('calcErr');
+  e.textContent=msg; e.classList.remove('hidden');
+}
+function clearErr(){document.getElementById('calcErr').classList.add('hidden');}
+
+// ── Geocoding (Nominatim + timezone) ──────────────────────────────────────────
+let _geoResults=[];
+
+async function geocodePlace(){
+  const q=document.getElementById('cPlace').value.trim();
+  const dd=document.getElementById('geoDropdown');
+  if(!q){dd.classList.add('hidden');return;}
+  dd.innerHTML='<li class="geo-none">Searching…</li>';
+  dd.classList.remove('hidden');
+  try{
+    const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=6`,
+      {headers:{'Accept-Language':'en'}});
+    _geoResults=await res.json();
+    if(!_geoResults.length){dd.innerHTML='<li class="geo-none">No results found</li>';return;}
+    dd.innerHTML=_geoResults.map((r,i)=>`<li onclick="selectGeo(${i})">${r.display_name}</li>`).join('');
+  }catch(e){dd.innerHTML='<li class="geo-none">Search failed — check connection</li>';}
+}
+
+async function selectGeo(i){
+  const r=_geoResults[i];
+  document.getElementById('cPlace').value=r.display_name;
+  document.getElementById('cLat').value=parseFloat(r.lat).toFixed(4);
+  document.getElementById('cLon').value=parseFloat(r.lon).toFixed(4);
+  document.getElementById('geoDropdown').classList.add('hidden');
+  // Auto-fetch UTC offset from coordinates
+  try{
+    const tz=await fetch(`https://timeapi.io/api/TimeZone/coordinate?latitude=${r.lat}&longitude=${r.lon}`);
+    const tzd=await tz.json();
+    if(tzd&&tzd.currentUtcOffset){
+      const sec=tzd.currentUtcOffset.seconds;
+      document.getElementById('cTZ').value=(sec/3600).toFixed(1);
+    }
+  }catch(e){
+    // Fallback: rough estimate from longitude (±0.5h rounding)
+    const rough=Math.round(parseFloat(r.lon)/15*2)/2;
+    document.getElementById('cTZ').value=rough;
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#cPlace')&&!e.target.closest('#geoDropdown')&&!e.target.closest('[onclick="geocodePlace()"]')){
+    document.getElementById('geoDropdown').classList.add('hidden');
+  }
+});
+
+// ── Chart Calculation ─────────────────────────────────────────────────────────
+async function calcChart(){
+  clearErr();
+  const bd=document.getElementById('cDate').value;
+  const lat=parseFloat(document.getElementById('cLat').value);
+  const lon=parseFloat(document.getElementById('cLon').value);
+  const tz=parseFloat(document.getElementById('cTZ').value);
+  const hour=parseInt(document.getElementById('cHour').value)||0;
+  const min=parseInt(document.getElementById('cMin').value)||0;
+  const qdate=document.getElementById('cQuery').value||null;
+  if(!bd||isNaN(lat)||isNaN(lon)||isNaN(tz)){showErr('Enter all required fields.');return;}
+
+  setLoading(true);
+  document.getElementById('chartResults').classList.add('hidden');
+
+  try{
+    // 1. Ephemeris
+    const eph=await apiFetch('/charts/ephemeris','POST',{
+      birth_date:bd,birth_hour:hour,birth_minute:min,
+      latitude:lat,longitude:lon,tz_offset:tz
+    });
+    const lagna=eph.lagna_sign;
+    const moonDeg=eph.planets.Moon.longitude;
+
+    // 2. Parallel: dasha balance, timeline, current dasha, lagna profile, yoga, ascendant profile
+    const [bal,tl,cd,lagnaProf,yogaRes,ascProf]=await Promise.all([
+      apiFetch('/dasha/birth-balance','POST',{birth_date:bd,moon_degrees:moonDeg}),
+      apiFetch('/dasha/mahadasha-timeline','POST',{birth_date:bd,moon_degrees:moonDeg}),
+      apiFetch('/dasha/current','POST',{birth_date:bd,moon_degrees:moonDeg,query_date:qdate}),
+      apiFetch('/lordship/lagna-profile','POST',{lagna}),
+      apiFetch('/yoga/analyse','POST',{lagna,planet_positions:
+        PLANETS.filter(p=>p!=='Rahu'&&p!=='Ketu').map(p=>({planet:p,house:eph.planets[p]?.house||1}))
+      }),
+      apiFetch('/ascendants/'+lagna),
+    ]);
+
+    // 3. Antardasha
+    let antarData=null;
+    if(cd.mahadasha){
+      antarData=await apiFetch('/dasha/antardasha','POST',{
+        major_lord:cd.mahadasha.lord,
+        mahadasha_start:cd.mahadasha.start_date,
+        partial_balance_days:cd.mahadasha.is_partial?bal.balance_days:null,
+      });
+    }
+
+    // 4. Interpretation
+    let interpData=null;
+    if(cd.mahadasha){
+      interpData=await apiFetch('/charts/interpret-dasha','POST',{
+        lagna,
+        maha_lord:cd.mahadasha.lord,
+        antar_lord:cd.antardasha?.sub_lord||null,
+      }).catch(()=>null);
+    }
+
+    // 5. Lagna narrative
+    const lagnaNarr=await apiFetch('/charts/interpret-lagna?lagna='+lagna,'POST',lagna).catch(()=>null);
+
+    // 6. Kundali SVG
+    const svgResp=await fetch(API+'/charts/kundali-svg',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        lagna_sign:lagna,
+        house_occupants:eph.house_occupants,
+        retrograde:Object.entries(eph.planets).filter(([,v])=>v.is_retrograde).map(([k])=>k),
+        size:340
+      })
+    });
+    const svgText=svgResp.ok?await svgResp.text():'';
+
+    // Store for save
+    lastChart={eph,bal,lagna,moonDeg,interpData,lagnaNarr,cd};
+
+    renderChart({eph,bal,tl,cd,antarData,lagnaProf,yogaRes,ascProf,interpData,lagnaNarr,svgText});
+    document.getElementById('chartResults').classList.remove('hidden');
+    setTimeout(()=>document.getElementById('chartResults').scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }catch(e){
+    showErr('Error: '+e.message+' — ensure API runs on :8000');
+  }
+  setLoading(false);
+}
+
+// ── South Indian Kundali SVG (client-side) ────────────────────────────────────
+const _SI_SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const _SI_ABBR =['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+// [row, col, signIndex] — fixed South Indian positions
+const _SI_CELLS=[[0,0,11],[0,1,0],[0,2,1],[0,3,2],[1,0,10],[1,3,3],[2,0,9],[2,3,4],[3,0,8],[3,1,7],[3,2,6],[3,3,5]];
+const _SI_PCOLOR={Sun:'#b35900',Moon:'#2e3b55',Mars:'#8b0000',Mercury:'#2a6000',Jupiter:'#5c3d00',Venus:'#6b0060',Saturn:'#333',Rahu:'#555',Ketu:'#777'};
+
+function genSouthIndianSVG(lagnaSign, houseOccupants, retrograde, size){
+  size=size||340;
+  const li=_SI_SIGNS.indexOf(lagnaSign);
+  const c=size/4;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+  s+=`<rect width="${size}" height="${size}" fill="#f4ead5" rx="2"/>`;
+  s+=`<rect x="${c}" y="${c}" width="${2*c}" height="${2*c}" fill="#e8dcc4" stroke="#4b3621" stroke-width="0.8"/>`;
+  for(const [row,col,si] of _SI_CELLS){
+    const x=col*c, y=row*c;
+    const hn=((si-li+12)%12)+1;
+    const isL=(si===li);
+    s+=`<rect x="${x}" y="${y}" width="${c}" height="${c}" fill="${isL?'rgba(139,0,0,.06)':'#f4ead5'}" stroke="#4b3621" stroke-width="0.8"/>`;
+    if(isL) s+=`<polygon points="${x+c-14},${y} ${x+c},${y} ${x+c},${y+14}" fill="#8b0000" opacity=".75"/>`;
+    s+=`<text x="${x+3}" y="${y+9}" font-family="serif" font-size="6.5" fill="#4b3621" opacity=".45">${_SI_ABBR[si]}</text>`;
+    s+=`<text x="${x+c/2}" y="${y+19}" font-family="serif" font-size="9" fill="${isL?'#8b0000':'#2e3b55'}" text-anchor="middle" font-weight="${isL?'bold':'normal'}">${hn}</text>`;
+    const occ=houseOccupants[hn]||[];
+    let py=y+31;
+    for(const pl of occ){
+      const isR=retrograde&&retrograde.includes(pl);
+      s+=`<text x="${x+c/2}" y="${py}" font-family="serif" font-size="8" fill="${_SI_PCOLOR[pl]||'#4b3621'}" text-anchor="middle">${pl.slice(0,2)}${isR?'℞':''}</text>`;
+      py+=10;
+    }
+  }
+  s+=`<rect x="0.5" y="0.5" width="${size-1}" height="${size-1}" fill="none" stroke="#4b3621" stroke-width="1.5"/>`;
+  s+='</svg>';
+  return s;
+}
+
+let _kundaliMode='north', _lastSvgText='', _lastEph=null;
+
+function switchKundali(mode){
+  _kundaliMode=mode;
+  document.getElementById('btnNorth').className='obtn sm'+(mode==='north'?'':' ghost');
+  document.getElementById('btnSouth').className='obtn sm'+(mode==='south'?'':' ghost');
+  document.getElementById('btnNorth').style.cssText='padding:.25rem .65rem;font-size:.55rem';
+  document.getElementById('btnSouth').style.cssText='padding:.25rem .65rem;font-size:.55rem';
+  if(!_lastEph) return;
+  const retro=Object.entries(_lastEph.planets).filter(([,v])=>v.is_retrograde).map(([k])=>k);
+  if(mode==='south'){
+    document.getElementById('kundaliSvg').innerHTML=genSouthIndianSVG(_lastEph.lagna_sign,_lastEph.house_occupants,retro,340);
+  } else {
+    document.getElementById('kundaliSvg').innerHTML=_lastSvgText||'<p class="text-xs opacity-50 p-4">SVG unavailable</p>';
+  }
+}
+
+// ── Render chart ──────────────────────────────────────────────────────────────
+function renderChart({eph,bal,tl,cd,antarData,lagnaProf,yogaRes,ascProf,interpData,lagnaNarr,svgText}){
+  // Store for style toggle
+  _lastEph=eph; _lastSvgText=svgText; _kundaliMode='north';
+  document.getElementById('btnNorth').className='obtn sm';
+  document.getElementById('btnSouth').className='obtn ghost sm';
+  document.getElementById('btnNorth').style.cssText='padding:.25rem .65rem;font-size:.55rem';
+  document.getElementById('btnSouth').style.cssText='padding:.25rem .65rem;font-size:.55rem';
+  // Kundali
+  document.getElementById('kundaliSvg').innerHTML=svgText||'<p class="text-xs opacity-50 p-4">SVG unavailable</p>';
+  document.getElementById('lagnaAyanamsa').textContent=
+    `Lagna: ${eph.lagna_sign} ${eph.lagna_degrees.toFixed(2)}° · Ayanamsa: ${eph.ayanamsa}° (Lahiri)`;
+
+  // Planet table
+  const tbody=document.getElementById('planetTable');
+  tbody.innerHTML='';
+  PLANETS.forEach(p=>{
+    const info=eph.planets[p]; if(!info) return;
+    tbody.innerHTML+=`<tr>
+      <td>${SYM[p]||''} ${p}</td>
+      <td>${info.sign}</td>
+      <td>${info.sign_deg.toFixed(1)}°</td>
+      <td>${info.house}</td>
+      <td>${info.is_retrograde?'℞':''}</td>
+    </tr>`;
+  });
+
+  // Nakshatra
+  document.getElementById('rNakSym').textContent=SYM[bal.nakshatra_lord]||'✦';
+  document.getElementById('rNakName').textContent=bal.nakshatra_name;
+  document.getElementById('rNakLord').textContent=bal.nakshatra_lord;
+  document.getElementById('rBalYMD').textContent=fmtYMD(bal.balance_ymd);
+  document.getElementById('rNakExplain').innerHTML=
+    `Moon occupies <strong>${bal.nakshatra_name}</strong> (lord: <strong>${bal.nakshatra_lord}</strong>). `+
+    `${(bal.fraction_elapsed*100).toFixed(2)}% of nakshatra elapsed at birth — `+
+    `<strong>${fmtYMD(bal.balance_ymd)}</strong> of the ${bal.nakshatra_lord} Mahadasha `+
+    `(${DYRS[bal.nakshatra_lord]} years) remains. Formula: remaining fraction × dasha years.`;
+
+  // Running dashas
+  document.getElementById('rMaha').textContent=cd.mahadasha?.lord||'—';
+  document.getElementById('rMahaDates').textContent=cd.mahadasha?`${cd.mahadasha.start_date} → ${cd.mahadasha.end_date}`:'—';
+  document.getElementById('rAntar').textContent=cd.antardasha?.sub_lord||'—';
+  document.getElementById('rAntarDates').textContent=cd.antardasha?`${cd.antardasha.start_date} → ${cd.antardasha.end_date}`:'—';
+  document.getElementById('rPratya').textContent=cd.pratyantardasha?.sub2_lord||'—';
+  document.getElementById('rPratyaDates').textContent=cd.pratyantardasha?`${cd.pratyantardasha.start_date} → ${cd.pratyantardasha.end_date}`:'—';
+
+  // Interpretation
+  if(interpData){
+    const qc=`quality-${interpData.quality_color}`;
+    document.getElementById('rInterpQuality').textContent=interpData.quality;
+    document.getElementById('rInterpQuality').className=`font-header text-xs tracking-widest px-3 py-2 mb-2 ${qc}`;
+    document.getElementById('rInterpCombined').innerHTML=interpData.combined;
+    document.getElementById('rInterpAreas').textContent='Areas activated: '+interpData.areas_activated.slice(0,4).join(' · ');
+    const caut=document.getElementById('rInterpCautions');
+    caut.innerHTML=interpData.cautions.map(c=>
+      `<div class="rule-box red font-scribe text-sm py-1 px-2">⚠ ${c}</div>`
+    ).join('');
+    document.getElementById('rInterpBlock').classList.remove('hidden');
+  }
+
+  // Antardasha table
+  if(antarData){
+    const al=document.getElementById('rAntarTable');
+    const today=new Date().toISOString().slice(0,10);
+    al.innerHTML=`<table class="w-full dtable text-xs mt-1">
+      <thead><tr><th>Antardasha</th><th>Duration</th><th>Start</th><th>End</th></tr></thead>
+      <tbody>${antarData.antardashas.map(a=>
+        `<tr class="${cd.antardasha&&a.sub_lord===cd.antardasha.sub_lord?'hi':''}">
+          <td>${SYM[a.sub_lord]||''} ${a.sub_lord}${cd.antardasha&&a.sub_lord===cd.antardasha.sub_lord?' ◀':''}</td>
+          <td>${fmtYMD(a.duration_ymd)}</td>
+          <td>${a.start_date}</td><td>${a.end_date}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+
+  // Lagna narrative
+  document.getElementById('rLagnaNarrative').innerHTML=
+    lagnaNarr?.narrative || ascProf.notes;
+
+  // Lagna grid
+  const grid=document.getElementById('rLagnaGrid');
+  grid.innerHTML='';
+  lagnaProf.planet_evaluations.forEach(ev=>{
+    const b=nb(ev.functional_nature);
+    grid.innerHTML+=`<div class="flex items-center gap-1.5 py-2 px-2 bg-white/20 border border-sepia-dark/10">
+      <span class="text-base">${SYM[ev.planet]||'✦'}</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-header text-[9px] tracking-wide">${ev.planet}</p>
+        <p class="text-[8px] opacity-50">H${ev.owned_houses.join('/H')||'—'}</p>
+      </div>
+      <span class="text-[8px] px-1 py-0.5 ${b.cls}">${b.l}${ev.is_yoga_karaka?' ✦':''}</span>
+    </div>`;
+  });
+
+  // Yogas
+  const yl=document.getElementById('rYogaList');
+  yl.innerHTML=yogaRes.raja_yogas.length
+    ?yogaRes.raja_yogas.map(y=>`<div class="border border-ochre/30 bg-ochre/5 p-3 text-sm">
+        <p class="font-header text-[9px] tracking-widest text-ochre mb-1">${y.yoga_type} — ${y.sambandha_type}</p>
+        <p>${y.description}</p>
+      </div>`).join('')
+    :`<p class="font-scribe italic opacity-60 text-sm">No Raja Yogas detected.</p>`;
+
+  const ml=document.getElementById('rMarakaList');
+  ml.innerHTML=yogaRes.marakas.map(m=>`<div class="border border-earth-red/20 bg-earth-red/5 p-3 text-sm">
+    <p class="font-header text-[9px] tracking-widest text-earth-red mb-1">${m.planet} — ${m.severity}</p>
+    <p>${m.description}</p>
+  </div>`).join('');
+
+  // Timeline
+  const today2=new Date().toISOString().slice(0,10);
+  document.getElementById('rTimeline').innerHTML=
+    tl.timeline.map(r=>`<tr class="${today2>=r.start_date&&today2<r.end_date?'hi':''}">
+      <td>${SYM[r.lord]||''} ${r.lord}${r.is_partial?' *':''}${today2>=r.start_date&&today2<r.end_date?' ◀':''}</td>
+      <td>${r.years}</td><td>${r.start_date}</td><td>${r.end_date}</td>
+    </tr>`).join('')+
+    `<tr><td colspan="4" class="font-header text-[8px] opacity-40 italic py-1">* Partial (balance at birth)</td></tr>`;
+}
+
+// ── Save chart ────────────────────────────────────────────────────────────────
+async function saveChart(){
+  if(!lastChart){showErr('Cast a chart first.');return;}
+  const bd=document.getElementById('cDate').value;
+  const lat=parseFloat(document.getElementById('cLat').value);
+  const lon=parseFloat(document.getElementById('cLon').value);
+  const tz=parseFloat(document.getElementById('cTZ').value);
+  try{
+    const saved=await apiFetch('/charts/','POST',{
+      name:document.getElementById('cName').value||'Unnamed',
+      birth_date:bd,
+      birth_hour:parseInt(document.getElementById('cHour').value)||0,
+      birth_minute:parseInt(document.getElementById('cMin').value)||0,
+      birth_place:document.getElementById('cPlace').value||'',
+      latitude:lat,longitude:lon,tz_offset:tz,
+    });
+    activeChartId=saved.id;
+    const msg=document.getElementById('saveMsg');
+    msg.classList.remove('hidden');
+    setTimeout(()=>msg.classList.add('hidden'),3000);
+  }catch(e){showErr('Save error: '+e.message);}
+}
+
+// ── Saved charts tab ──────────────────────────────────────────────────────────
+async function loadSavedCharts(){
+  const list=document.getElementById('savedList');
+  list.innerHTML='<p class="font-header text-[9px] opacity-50 tracking-widest">Loading…</p>';
+  try{
+    const charts=await apiFetch('/charts/');
+    if(!charts.length){
+      list.innerHTML='<p class="font-scribe italic opacity-60 text-sm">No saved charts yet. Cast a chart and click Save Chart.</p>';
+      return;
+    }
+    list.innerHTML=charts.map(c=>`
+      <div class="chart-pill">
+        <span class="material-symbols-outlined text-ochre text-sm">person</span>
+        <div class="flex-1">
+          <p class="font-header text-xs tracking-wide">${c.name}</p>
+          <p class="font-header text-[9px] opacity-50">${c.birth_date} · ${c.birth_place} · Lagna: ${c.lagna_sign||'?'}</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="loadProgress(${c.id})" class="obtn sm">Progress</button>
+          <button onclick="deleteChart(${c.id})" class="obtn sm ghost" title="Delete">✕</button>
+        </div>
+      </div>
+      <div id="prog-${c.id}" class="hidden ml-2 mt-1 mb-2 p-3 bg-aged-paper/40 border border-sepia-dark/10 text-sm fi">
+      </div>`).join('');
+  }catch(e){
+    list.innerHTML=`<p class="font-header text-[9px] text-earth-red">${e.message}</p>`;
+  }
+}
+
+async function loadProgress(id){
+  const el=document.getElementById('prog-'+id);
+  if(!el.classList.contains('hidden')){el.classList.add('hidden');return;}
+  el.classList.remove('hidden');
+  el.innerHTML='Loading…';
+  try{
+    const progs=await apiFetch('/charts/'+id+'/progress');
+    if(!progs.length){el.innerHTML='<p class="italic opacity-60">No lesson progress recorded yet.</p>';return;}
+    el.innerHTML=progs.map(p=>{
+      const pct=p.max_score?Math.round(p.score/p.max_score*100):0;
+      return `<div class="flex items-center gap-3 mb-1">
+        <span class="font-header text-[9px] tracking-widest w-20">Lesson ${p.lesson_index+1}</span>
+        <div class="prog-bar flex-1"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <span class="${pct>=60?'score-badge pass':'score-badge fail'}">${p.score}/${p.max_score} (${pct}%)</span>
+        <span class="font-header text-[8px] opacity-50">${p.completed?'✓ Done':'In progress'}</span>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<p class="text-earth-red text-xs">'+e.message+'</p>';}
+}
+
+async function deleteChart(id){
+  if(!confirm('Delete this chart?')) return;
+  await apiFetch('/charts/'+id,'DELETE').catch(()=>{});
+  loadSavedCharts();
+}
+
+// ── Curriculum ────────────────────────────────────────────────────────────────
+const LESSONS=[
+  {title:'Introduction',icon:'brightness_5',
+   theory:`<p class="text-base leading-relaxed mb-3"><strong>Laghu Parashari</strong> ("The Small Work of Parashari") is a concise Sanskrit treatise of only 42 verses, yet it is considered the most precise text on predictive Jyotish. It answers one question with surgical precision: <em>which planet gives good results for a given ascendant, and when will those results manifest?</em></p>
+   <p class="text-base leading-relaxed mb-3">The text rests on two pillars: the <strong>Vimshottari Dasha system</strong> (timing) and the <strong>Bhavadhipati rule engine</strong> (planet quality). Every lesson in this tutor derives directly from Laghu Parashari's 42 verses.</p>
+   <div class="rule-box indigo"><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">The Two Questions</p><p class="font-scribe text-sm"><strong>Quality:</strong> Is this planet auspicious or inauspicious for this Lagna?<br><strong>Timing:</strong> When will it give its results?</p></div>`,
+   quiz:[
+     {q:'Why does the same planet behave differently for different ascendants?',a:'Because the Lagna determines which house each planet rules. Jupiter rules the 9th and 12th for Aries (net auspicious) but the 8th and 11th for Taurus (net inauspicious). The planet\'s functional character changes with the Lagna entirely.'},
+     {q:'What makes Laghu Parashari unique compared to general Vedic astrology texts?',a:'Its extreme specificity — it gives exact rules for which planet is Yoga Karaka, which is Maraka, and which is inauspicious for each of the 12 Lagnas, with mathematical precision rather than vague generalisations.'},
+   ],demo:null},
+
+  {title:'Vimshottari Dasha',icon:'history_edu',
+   theory:`<p class="text-base leading-relaxed mb-3">The <strong>Vimshottari Dasha</strong> is a 120-year planetary period system. Nine planets each rule a fixed number of years in a repeating sequence. The starting point — and balance — is determined by the Moon's Nakshatra at birth.</p>
+   <div class="grid grid-cols-3 md:grid-cols-5 gap-2 my-4 text-sm">
+   ${['Ketu 7','Venus 20','Sun 6','Moon 10','Mars 7','Rahu 18','Jupiter 16','Saturn 19','Mercury 17'].map(s=>{const[p,y]=s.split(' ');return`<div class="bg-aged-paper/50 border border-sepia-dark/10 p-2 text-center"><span class="text-2xl">${SYM[p]||'✦'}</span><p class="font-header text-[9px]">${p}</p><p class="font-oracle text-sm text-earth-red">${y}yr</p></div>`}).join('')}
+   </div>
+   <div class="rule-box"><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">The Formulae</p>
+   <p class="font-scribe text-sm mb-1"><strong>Birth Balance:</strong> Remaining years = (Nakshatra fraction remaining) × Planet's years</p>
+   <p class="font-scribe text-sm mb-1"><strong>Antardasha:</strong> (A_years × B_years) ÷ 120</p>
+   <p class="font-scribe text-sm"><strong>Pratyantardasha:</strong> (A × B × C) ÷ 120²</p></div>`,
+   quiz:[
+     {q:'Moon is at 93.5°. Which nakshatra, and how much Saturn Dasha remains at birth?',a:'93.5° ÷ 13.333° = nakshatra index 7 = Pushya (Saturn dasha). Fraction elapsed: (93.5 − 93.333) ÷ 13.333 = 1.25%. Remaining: 98.75% × 19 years = 18 years 9 months approx.'},
+     {q:'Calculate the Antardasha of Jupiter under Saturn.',a:'(Saturn 19 yrs × Jupiter 16 yrs) ÷ 120 = 304/120 = 2.533 years ≈ 2 years 6 months 11 days.'},
+   ],
+   demo:{label:"Calculate from Moon's longitude",inputs:[
+     {id:'d1moon',label:"Moon Longitude (°)",type:'number',def:'150'},
+     {id:'d1date',label:"Birth Date",type:'date',def:'1990-01-01'},
+   ],fn:'demoL1'}},
+
+  {title:'House Lordship',icon:'account_balance',
+   theory:`<p class="text-base leading-relaxed mb-3">Laghu Parashari's core contribution: four rules that determine whether a planet is functionally auspicious or inauspicious for a given Lagna, overriding its natural character.</p>
+   <div class="rule-box mb-2"><p class="font-header text-[9px] tracking-widest text-earth-red mb-1">Rule A — Trikona Lords (1, 5, 9)</p><p class="font-scribe text-sm">Always <strong>Shubha</strong>. The 9th and 5th are Dharma trines — the most auspicious houses. Their lords give only positive results.</p></div>
+   <div class="rule-box mb-2"><p class="font-header text-[9px] tracking-widest text-earth-red mb-1">Rule B — Trishadaya Lords (3, 6, 11)</p><p class="font-scribe text-sm">Always <strong>Ashubha</strong>. The 6th is the worst; 11th is Upachaya but still inauspicious in the Laghu Parashari framework.</p></div>
+   <div class="rule-box gold mb-2"><p class="font-header text-[9px] tracking-widest text-earth-red mb-1">Rule C — Kendradhipati Dosha (1, 4, 7, 10)</p><p class="font-scribe text-sm">Natural <strong>benefics</strong> (Jupiter, Venus, Mercury, Moon) owning a kendra lose their beneficence. Natural <strong>malefics</strong> (Sun, Mars, Saturn) owning a kendra lose their maleficence. The 1st house is exempt — it is both kendra and trikona.</p></div>
+   <div class="rule-box indigo"><p class="font-header text-[9px] tracking-widest text-earth-red mb-1">Rule D — The 8th Lord Exception</p><p class="font-scribe text-sm">The 8th lord is <strong>inauspicious</strong>, EXCEPT when it is also the Lagna lord (e.g. Mars for Aries, Venus for Libra) — in which case the 8th lordship does not afflict it.</p></div>`,
+   quiz:[
+     {q:'For Aries Lagna, why is Mercury the most harmful planet?',a:'Mercury rules Gemini (3rd house) and Virgo (6th house) for Aries. Both are Trishadaya houses — making Mercury a double Trishadaya lord, the most strongly inauspicious possible combination.'},
+     {q:'For Cancer Lagna, why is Saturn so dangerous?',a:'Saturn rules Capricorn (7th house — Kendra and Maraka) and Aquarius (8th house) for Cancer Lagna. It is therefore both a Maraka lord and an 8th lord simultaneously — a powerful malefic combination.'},
+   ],
+   demo:{label:'Evaluate a planet for a Lagna',inputs:[
+     {id:'d2lagna',label:'Lagna',type:'select',options:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],def:'Aries'},
+     {id:'d2planet',label:'Planet',type:'select',options:['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'],def:'Mercury'},
+   ],fn:'demoL2'}},
+
+  {title:'Yoga Karaka',icon:'auto_awesome',
+   theory:`<p class="text-base leading-relaxed mb-3">A <strong>Yoga Karaka</strong> is a planet that simultaneously rules both a Kendra (4, 7, 10) and a Trikona (5, 9) house — excluding the 1st. It is the single most powerful auspicious planet for that Lagna, producing Raja Yoga results during its Dasha.</p>
+   <div class="rule-box gold mb-3"><p class="font-header text-[9px] tracking-widest mb-1">Yoga Karakas by Lagna</p>
+   <div class="grid grid-cols-2 gap-x-4 text-sm mt-1">
+   ${[['Taurus','Saturn (9+10)'],['Cancer','Mars (5+10)'],['Leo','Mars (4+9)'],['Libra','Saturn (4+5)'],['Capricorn','Venus (5+10)'],['Aquarius','Venus (4+9)']].map(([l,p])=>`<div><span class="font-header text-[9px]">${l}:</span> ${p}</div>`).join('')}
+   <div><span class="font-header text-[9px]">Others:</span> None (Lagna lord rules 1+8)</div>
+   </div></div>
+   <p class="text-base leading-relaxed mb-2"><strong>Raja Yoga through Sambandha</strong> — When a Kendra lord and a Trikona lord form a relationship (conjunction, mutual aspect, or sign exchange), a Raja Yoga forms even if neither is a single-planet Yoga Karaka.</p>`,
+   quiz:[
+     {q:'For Cancer Lagna, Mars rules which houses? Why is it a Yoga Karaka?',a:'Mars rules Aries (10th — Kendra) and Scorpio (5th — Trikona) for Cancer Lagna. Owning one Kendra and one Trikona makes it the Yoga Karaka. Its Dasha produces career peaks and recognition.'},
+     {q:'For Aries Lagna, if Jupiter (9th lord) and Saturn (10th lord) are in mutual aspect, what forms?',a:'A Raja Yoga forms through Mutual Aspect Sambandha between the 9th Trikona lord (Jupiter) and 10th Kendra lord (Saturn). Their combined Maha/Antardasha periods give Raja Yoga results.'},
+   ],
+   demo:{label:'Yoga Karakas for a Lagna',inputs:[
+     {id:'d3lagna',label:'Lagna',type:'select',options:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],def:'Taurus'},
+   ],fn:'demoL3'}},
+
+  {title:'Maraka',icon:'warning',
+   theory:`<p class="text-base leading-relaxed mb-3"><strong>Maraka</strong> ("death-inflicting") planets arise from the houses of longevity: the <strong>8th</strong> (primary Ayu Bhava) and the <strong>3rd</strong> (secondary, as the 8th from the 8th). Their 12th houses — the <strong>2nd</strong> and the <strong>7th</strong> — are the Maraka Sthanas.</p>
+   <div class="rule-box mb-3"><p class="font-header text-[9px] tracking-widest text-earth-red mb-1">The Maraka Logic</p>
+   <p class="font-scribe text-sm">12th from 3rd = <strong>2nd house</strong> (loss of secondary longevity)<br>12th from 8th = <strong>7th house</strong> (loss of primary longevity)<br>Lords of the 2nd and 7th are therefore primary Marakas.</p></div>
+   <div class="rule-box gold mb-3"><p class="font-header text-[9px] tracking-widest mb-1">Important Caveats</p>
+   <ul class="font-scribe text-sm list-disc ml-4 space-y-1">
+   <li>Maraka Dasha inflicts death only when the native is in old age and the longevity is exhausted</li>
+   <li>In younger years: illness, loss, major setbacks, or career crises</li>
+   <li>Natural malefics placed in the 2nd or 7th become secondary Marakas</li>
+   <li>Saturn always co-participates as a Maraka regardless of Lagna</li>
+   </ul></div>`,
+   quiz:[
+     {q:'For Aries Lagna, why is Venus a "double Maraka"?',a:'Venus rules Taurus (2nd house — Maraka Sthana) and Libra (7th house — Maraka Sthana) for Aries. Ruling both Maraka houses makes it a double Maraka — the primary death-inflicting planet. Venus Dasha in old age is the classical indicator of danger.'},
+     {q:'For Leo Lagna, identify the Maraka lords.',a:'2nd house = Virgo → Mercury. 7th house = Aquarius → Saturn. Both Mercury and Saturn are Maraka lords for Leo. Note Saturn also rules the 6th (trishadaya), making it a particularly dangerous Maraka.'},
+   ],
+   demo:{label:'Maraka lords for a Lagna',inputs:[
+     {id:'d4lagna',label:'Lagna',type:'select',options:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],def:'Aries'},
+   ],fn:'demoL4'}},
+];
+
+// ── Lesson rendering ──────────────────────────────────────────────────────────
+let currentLesson=0;
+
+function buildLessonCards(){
+  const container=document.getElementById('lessonCards');
+  container.innerHTML=LESSONS.map((L,i)=>`
+    <div class="lesson-card${i===0?' active':''}" id="lcard-${i}" onclick="showLesson(${i})">
+      <span class="material-symbols-outlined text-ochre text-xl">${L.icon}</span>
+      <p class="font-header text-[9px] mt-1 tracking-wide leading-tight">${L.title}</p>
+      <div id="lscore-${i}" class="mt-1"></div>
+    </div>`).join('');
+}
+
+function updateLessonScore(idx){
+  const s=quizScores[idx];
+  const el=document.getElementById('lscore-'+idx);
+  if(!el) return;
+  if(s){
+    const pct=Math.round(s.correct/s.total*100);
+    el.innerHTML=`<span class="${pct>=50?'score-badge pass':'score-badge fail'}">${s.correct}/${s.total}</span>`;
+  }
+}
+
+function showLesson(idx){
+  currentLesson=idx;
+  document.querySelectorAll('[id^="lcard-"]').forEach((el,i)=>el.classList.toggle('active',i===idx));
+  // Update progress bar
+  const totalPct=Math.round(((idx+1)/LESSONS.length)*100);
+  document.getElementById('progFill').style.width=totalPct+'%';
+  const avgScore=Object.values(quizScores).reduce((a,v)=>a+(v.correct/v.total),0)/(Object.keys(quizScores).length||1);
+  document.getElementById('progLabel').textContent=
+    `Lesson ${idx+1} of ${LESSONS.length} · ${Object.keys(quizScores).length?Math.round(avgScore*100)+'% avg quiz score':'No quizzes taken yet'}`;
+
+  const L=LESSONS[idx];
+  const qs=quizScores[idx]||{correct:0,total:L.quiz.length};
+
+  const demoHTML=L.demo?`<div class="rule-box indigo mt-4">
+    <p class="font-header text-[9px] tracking-widest text-indigo-ink mb-2">${L.demo.label}</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+    ${L.demo.inputs.map(inp=>inp.type==='select'
+      ?`<div><label class="font-header text-[8px] tracking-widest text-indigo-ink block mb-1">${inp.label}</label>
+         <select id="${inp.id}" class="inp text-xs">${inp.options.map(o=>`<option${o===inp.def?' selected':''}>${o}</option>`).join('')}</select></div>`
+      :`<div><label class="font-header text-[8px] tracking-widest text-indigo-ink block mb-1">${inp.label}</label>
+         <input id="${inp.id}" type="${inp.type}" class="inp text-xs" value="${inp.def}"/></div>`
+    ).join('')}
+    </div>
+    <button onclick="${L.demo.fn}()" class="obtn sm">Calculate</button>
+    <span id="dl_${L.demo.fn}" class="hidden ml-2 spin text-earth-red material-symbols-outlined text-sm">brightness_5</span>
+    <div id="do_${L.demo.fn}" class="mt-2 text-sm fi"></div>
+  </div>`:'';
+
+  let qIdx=0;
+  const quizHTML=L.quiz.map((q,i)=>`
+    <div class="border border-sepia-dark/15 p-3 mb-2">
+      <p class="font-header text-[9px] tracking-widest text-indigo-ink mb-2">Q${i+1} of ${L.quiz.length}</p>
+      <p class="font-scribe text-sm mb-2">${q.q}</p>
+      <button onclick="revealAnswer(this,${idx},${i})" class="obtn sm">Reveal Answer</button>
+      <div class="answer" id="ans-${idx}-${i}">${q.a}</div>
+    </div>`).join('');
+
+  document.getElementById('lessonArea').innerHTML=`<div class="fi">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="material-symbols-outlined text-ochre text-3xl">${L.icon}</span>
+      <div>
+        <h2 class="font-oracle text-2xl text-sepia-dark ink-bleed">${L.title}</h2>
+        ${quizScores[idx]?`<span class="${quizScores[idx].correct/quizScores[idx].total>=.5?'score-badge pass':'score-badge fail'}">Score: ${quizScores[idx].correct}/${quizScores[idx].total}</span>`:''}
+      </div>
+    </div>
+    <div class="divider" style="margin:.5rem 0 1rem"></div>
+    <div class="font-scribe text-base leading-relaxed">${L.theory}</div>
+    ${demoHTML}
+    <div class="mt-5">
+      <p class="font-header text-earth-red text-xs tracking-widest mb-2">Practice — Check Your Understanding</p>
+      ${quizHTML}
+    </div>
+    <div class="flex justify-between mt-6">
+      ${idx>0?`<button onclick="showLesson(${idx-1})" class="obtn sm ghost">← Previous</button>`:'<span></span>'}
+      ${idx<LESSONS.length-1
+        ?`<button onclick="showLesson(${idx+1})" class="obtn">Next Lesson →</button>`
+        :`<button onclick="goTab('chart')" class="obtn">Cast Your Chart →</button>`}
+    </div>
+  </div>`;
+}
+
+function revealAnswer(btn,lessonIdx,qIdx){
+  const el=document.getElementById(`ans-${lessonIdx}-${qIdx}`);
+  el.style.display='block';
+  btn.style.display='none';
+  // Quiz scoring: each reveal counts as attempted; mark correct if user clicks "Mark correct"
+  const L=LESSONS[lessonIdx];
+  // Replace button with self-assessment
+  el.insertAdjacentHTML('afterend',`
+    <div class="flex gap-2 mt-1" id="assess-${lessonIdx}-${qIdx}">
+      <button onclick="markAnswer(${lessonIdx},${qIdx},true,this.closest('div'))" class="obtn sm">✓ I got it</button>
+      <button onclick="markAnswer(${lessonIdx},${qIdx},false,this.closest('div'))" class="obtn sm ghost">✗ Needs review</button>
+    </div>`);
+}
+
+function markAnswer(lessonIdx,qIdx,correct,el){
+  el.remove();
+  const score=quizScores[lessonIdx]||{correct:0,total:0};
+  score.total=Math.max(score.total,qIdx+1);
+  if(correct) score.correct=Math.min(score.correct+1,score.total);
+  // ensure total reflects all questions attempted
+  const totalQs=LESSONS[lessonIdx].quiz.length;
+  if(qIdx===totalQs-1) score.total=totalQs;
+  quizScores[lessonIdx]=score;
+  localStorage.setItem('quizScores',JSON.stringify(quizScores));
+  updateLessonScore(lessonIdx);
+  // Update progress label
+  const avgScore=Object.values(quizScores).reduce((a,v)=>a+(v.correct/v.total),0)/(Object.keys(quizScores).length||1);
+  document.getElementById('progLabel').textContent=
+    `Lesson ${currentLesson+1} of ${LESSONS.length} · ${Math.round(avgScore*100)}% avg quiz score`;
+  // Save progress if chart is active
+  if(activeChartId){
+    apiFetch(`/charts/${activeChartId}/progress/${lessonIdx}`,'PUT',{
+      lesson_index:lessonIdx,completed:score.total>=totalQs&&score.correct===score.total,
+      score:score.correct,max_score:totalQs,time_spent_s:0,notes:'',
+    }).catch(()=>{});
+  }
+}
+
+// ── Lesson demos ──────────────────────────────────────────────────────────────
+async function runDemo(fn,reqFn){
+  const out=document.getElementById('do_'+fn);
+  const ldr=document.getElementById('dl_'+fn);
+  out.innerHTML=''; ldr?.classList.remove('hidden');
+  try{const r=await reqFn();out.innerHTML=r;}
+  catch(e){out.innerHTML=`<p class="text-earth-red text-xs">${e.message}</p>`;}
+  ldr?.classList.add('hidden');
+}
+
+async function demoL1(){
+  runDemo('demoL1',async()=>{
+    const moon=parseFloat(document.getElementById('d1moon').value);
+    const date=document.getElementById('d1date').value;
+    const[b,tl]=await Promise.all([
+      apiFetch('/dasha/birth-balance','POST',{birth_date:date,moon_degrees:moon}),
+      apiFetch('/dasha/mahadasha-timeline','POST',{birth_date:date,moon_degrees:moon}),
+    ]);
+    return`<div class="p-3 bg-aged-paper/50 border border-sepia-dark/10">
+      <p>☾ <strong>${moon}°</strong> → <strong>${b.nakshatra_name}</strong> (Lord: <strong>${b.nakshatra_lord}</strong>)</p>
+      <p class="mt-1">Elapsed: <strong>${(b.fraction_elapsed*100).toFixed(2)}%</strong> · Balance: <strong>${fmtYMD(b.balance_ymd)}</strong></p>
+      <p class="mt-1 font-header text-[9px] tracking-widest text-indigo-ink">First 5 Mahadashas:</p>
+      ${tl.timeline.slice(0,5).map(r=>`<p class="ml-2 text-xs">• ${r.lord} (${r.years}yr): ${r.start_date} → ${r.end_date}${r.is_partial?' *':''}</p>`).join('')}
+    </div>`;
+  });
+}
+
+async function demoL2(){
+  runDemo('demoL2',async()=>{
+    const lagna=document.getElementById('d2lagna').value;
+    const planet=document.getElementById('d2planet').value;
+    const ev=await apiFetch('/lordship/evaluate-planet','POST',{lagna,planet});
+    const b=nb(ev.functional_nature);
+    return`<div class="p-3 bg-aged-paper/50 border border-sepia-dark/10">
+      <p>${SYM[planet]||'✦'} <strong>${planet}</strong> for <strong>${lagna} Lagna</strong> → owns house(s) <strong>${ev.owned_houses.join(', ')}</strong></p>
+      <p class="mt-1">Functional nature: <span class="${b.cls}">${b.l}</span>${ev.is_yoga_karaka?' <span class="b-yk">Yoga Karaka ✦</span>':''}${ev.is_maraka?' <span class="b-mara">Maraka</span>':''}</p>
+      <p class="mt-1 text-xs opacity-70 italic">${ev.rules_applied.slice(0,2).join(' ')}</p>
+    </div>`;
+  });
+}
+
+async function demoL3(){
+  runDemo('demoL3',async()=>{
+    const lagna=document.getElementById('d3lagna').value;
+    const p=await apiFetch('/ascendants/'+lagna);
+    const yk=p.yoga_karaka.length?p.yoga_karaka.join(', '):'None for this Lagna';
+    return`<div class="p-3 bg-aged-paper/50 border border-sepia-dark/10">
+      <p><strong>${lagna} Lagna</strong> — Yoga Karaka: <strong class="text-ochre">${yk}</strong></p>
+      <p class="mt-1">Auspicious: ${p.auspicious.join(', ')} · Inauspicious: ${p.inauspicious.join(', ')}</p>
+      <p class="mt-1 text-xs opacity-70 italic">${p.notes.slice(0,180)}…</p>
+    </div>`;
+  });
+}
+
+async function demoL4(){
+  runDemo('demoL4',async()=>{
+    const lagna=document.getElementById('d4lagna').value;
+    const r=await apiFetch('/yoga/marakas','POST',{lagna,planet_positions:[]});
+    if(!r.marakas.length) return'<p class="opacity-60 italic">No Maraka lords via lordship.</p>';
+    return`<div class="space-y-2">`+r.marakas.map(m=>`
+      <div class="p-2 bg-aged-paper/50 border border-earth-red/20">
+        <p><strong>${m.planet}</strong> — <span class="text-earth-red">${m.severity}</span></p>
+        <p class="text-xs opacity-70">${m.description.slice(0,160)}</p>
+      </div>`).join('')+'</div>';
+  });
+}
+
+// ── Reference tab ─────────────────────────────────────────────────────────────
+let refLoaded=false;
+async function loadRefData(){
+  if(refLoaded)return; refLoaded=true;
+  try{
+    const t=await apiFetch('/dasha/antardasha-table');
+    const rows=Object.keys(t.antardasha_table);
+    document.getElementById('refAntarTable').innerHTML=`
+      <p class="font-header text-[9px] opacity-50 mb-1 tracking-widest">Rows=Mahadasha, Cols=Antardasha (hover for full duration)</p>
+      <div class="overflow-x-auto"><table class="dtable text-xs">
+        <thead><tr><th>↓Maha/Antar→</th>${rows.map(s=>`<th class="text-center">${SYM[s]||s[0]}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map(major=>`<tr>
+          <td class="font-header text-[9px]">${SYM[major]||''} ${major}</td>
+          ${rows.map(sub=>{const v=t.antardasha_table[major][sub];return`<td class="text-center text-[9px]" title="${major}/${sub}: ${v.ymd.years}y ${v.ymd.months}m ${v.ymd.days}d">${v.ymd.years}y${v.ymd.months}m</td>`;}).join('')}
+        </tr>`).join('')}
+        </tbody></table></div>`;
+  }catch(e){document.getElementById('refAntarTable').textContent='API unavailable: '+e.message;}
+  loadRefProfile();
+}
+
+async function loadRefProfile(){
+  const lagna=document.getElementById('refLagna').value;
+  try{
+    const p=await apiFetch('/ascendants/'+lagna);
+    document.getElementById('refProfileOut').innerHTML=`
+      <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
+        <div><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Yoga Karaka</p><p class="text-ochre font-semibold">${p.yoga_karaka.length?p.yoga_karaka.join(', '):'None'}</p></div>
+        <div><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Primary Maraka</p><p class="text-earth-red">${p.maraka.join(', ')}</p></div>
+        <div><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Auspicious</p><p>${p.auspicious.join(', ')}</p></div>
+        <div><p class="font-header text-[9px] tracking-widest text-indigo-ink mb-1">Inauspicious</p><p>${p.inauspicious.join(', ')}</p></div>
+      </div>
+      <p class="font-scribe italic text-sm opacity-80">${p.notes}</p>`;
+  }catch(e){}
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('cQuery').value=new Date().toISOString().slice(0,10);
+buildLessonCards();
+LESSONS.forEach((_,i)=>updateLessonScore(i));
+showLesson(0);
+</script>
+</body>
+</html>
