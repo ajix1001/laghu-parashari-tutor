@@ -78,8 +78,11 @@ function rahuTropical(jd) {
 }
 
 function computeLagna(time, lat, lon) {
-  const lst = Astronomy.SiderealTime(time);        // hours
-  const lstRad = lst * Math.PI / 12;               // convert to radians
+  // SiderealTime returns Greenwich Apparent Sidereal Time (GAST) in hours.
+  // Add observer longitude (in hours) to get Local Sidereal Time (LST).
+  const gast = Astronomy.SiderealTime(time);       // hours, Greenwich
+  const lst   = ((gast + lon / 15) % 24 + 24) % 24; // local sidereal time
+  const lstRad = lst * Math.PI / 12;               // convert hours→radians
   const T = (time.tt - 2451545.0) / 36525.0;
   const eps = (23.439291111 - 0.013004167*T) * Math.PI / 180;
   const latRad = lat * Math.PI / 180;
