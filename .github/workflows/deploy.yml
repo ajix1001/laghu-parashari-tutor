@@ -16,36 +16,126 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Bundle deps + source into function directory
+      - name: Build Python function bundle
         run: |
           FUNC_DIR="netlify/functions/api"
 
-          # 1. Install Python deps into lib/
-          pip install -r requirements.txt --target "$FUNC_DIR/lib" --upgrade --quiet
-          # Trim dist-info and __pycache__ to reduce zip size
-          find "$FUNC_DIR/lib" -name "*.dist-info" -type d -exec rm -rf {} + 2>/dev/null || true
-          find "$FUNC_DIR/lib" -name "__pycache__"  -type d -exec rm -rf {} + 2>/dev/null || true
+          # Install deps into lib/
+          pip install -r requirements.txt --target "$FUNC_DIR/lib" --quiet
 
-          # 2. Copy project source into src/ so the function can import it
+          # Copy project source into src/
           mkdir -p "$FUNC_DIR/src"
           cp main.py database.py "$FUNC_DIR/src/"
           cp -r engines data models api "$FUNC_DIR/src/"
-          # Remove pycache from source copy
-          find "$FUNC_DIR/src" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-          echo "Function directory contents:"
-          ls -la "$FUNC_DIR"
+          # Strip pycache / dist-info to keep zip small
+          find "$FUNC_DIR" -name "__pycache__"  -type d -exec rm -rf {} + 2>/dev/null || true
+          find "$FUNC_DIR" -name "*.dist-info"  -type d -exec rm -rf {} + 2>/dev/null || true
+          find "$FUNC_DIR" -name "*.pyi"              -delete 2>/dev/null || true
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
+          echo "=== Function dir size ==="
+          du -sh "$FUNC_DIR"
 
-      - name: Deploy to Netlify (frontend + Python function)
+      - name: Deploy via Netlify API
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID:    ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          netlify deploy \
-            --prod \
-            --dir=frontend \
-            --functions=netlify/functions \
-            --message="Deploy from GitHub Actions ($(git rev-parse --short HEAD))"
+          pip install requests --quiet
+          python - <<'PYEOF'
+          import os, hashlib, json, zipfile, io, pathlib, requests
+
+          TOKEN   = os.environ["NETLIFY_AUTH_TOKEN"]
+          SITE_ID = os.environ["NETLIFY_SITE_ID"]
+          HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+
+          def sha1(data: bytes) -> str:
+              return hashlib.sha1(data).hexdigest()
+
+          # ── 1. Collect frontend files ──────────────────────────────────────
+          frontend = pathlib.Path("frontend")
+          file_map = {}   # "/path": sha1
+          file_data = {}  # "/path": bytes
+          for p in frontend.rglob("*"):
+              if p.is_file():
+                  data = p.read_bytes()
+                  rel  = "/" + p.relative_to(frontend).as_posix()
+                  file_map[rel]  = sha1(data)
+                  file_data[rel] = data
+          print(f"Frontend: {len(file_map)} files")
+
+          # ── 2. Build function zip ──────────────────────────────────────────
+          func_dir = pathlib.Path("netlify/functions/api")
+          buf = io.BytesIO()
+          with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+              for p in func_dir.rglob("*"):
+                  if p.is_file():
+                      zf.write(p, p.relative_to(func_dir))
+          func_zip = buf.getvalue()
+          func_sha = sha1(func_zip)
+          print(f"Function zip: {len(func_zip)/1024/1024:.1f} MB  sha1={func_sha}")
+
+          # ── 3. Create deploy ───────────────────────────────────────────────
+          payload = {
+              "files":     file_map,
+              "functions": {"api": {"sha1": func_sha}},
+              "async":     False,
+          }
+          r = requests.post(
+              f"https://api.netlify.com/api/v1/sites/{SITE_ID}/deploys",
+              headers={**HEADERS, "Content-Type": "application/json"},
+              data=json.dumps(payload),
+          )
+          r.raise_for_status()
+          deploy = r.json()
+          deploy_id = deploy["id"]
+          print(f"Deploy created: {deploy_id}  state={deploy['state']}")
+
+          # ── 4. Upload required files ───────────────────────────────────────
+          required_files = deploy.get("required", [])
+          required_funcs = deploy.get("required_functions", [])
+          print(f"Required files: {len(required_files)}, Required functions: {len(required_funcs)}")
+
+          # Upload missing static files
+          sha_to_path = {v: k for k, v in file_map.items()}
+          for s in required_files:
+              path = sha_to_path.get(s)
+              if path:
+                  data = file_data[path]
+                  r2 = requests.put(
+                      f"https://api.netlify.com/api/v1/deploys/{deploy_id}/files{path}",
+                      headers={**HEADERS, "Content-Type": "application/octet-stream"},
+                      data=data,
+                  )
+                  r2.raise_for_status()
+                  print(f"  Uploaded {path}")
+
+          # Upload function zip if required
+          if func_sha in required_funcs or required_funcs:
+              r3 = requests.put(
+                  f"https://api.netlify.com/api/v1/deploys/{deploy_id}/functions/api",
+                  headers={**HEADERS, "Content-Type": "application/zip"},
+                  data=func_zip,
+              )
+              r3.raise_for_status()
+              print(f"  Uploaded function zip (status {r3.status_code})")
+
+          # ── 5. Check final deploy state ────────────────────────────────────
+          import time
+          for _ in range(20):
+              time.sleep(5)
+              r4 = requests.get(
+                  f"https://api.netlify.com/api/v1/deploys/{deploy_id}",
+                  headers=HEADERS,
+              )
+              state = r4.json().get("state")
+              print(f"  deploy state: {state}")
+              if state in ("ready", "error"):
+                  break
+
+          final = r4.json()
+          print(f"\n✅ Deploy URL: {final.get('ssl_url') or final.get('url')}")
+          print(f"   State: {final['state']}")
+          if final["state"] == "error":
+              raise SystemExit(f"Deploy failed: {final.get('error_message')}")
+          PYEOF
