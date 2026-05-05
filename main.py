@@ -9,6 +9,7 @@ FastAPI application implementing the complete Laghu Parashari engine suite:
   • Yoga Karaka & Maraka Engine   (/yoga)
   • Ascendant Profiles DB         (/ascendants)
   • Charts, Ephemeris & Kundali   (/charts)
+  • Prashna (Horary) Guidance     (/prashna)
 
 Run:
     uvicorn main:app --reload --port 8000
@@ -23,6 +24,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
 from api.routes import dasha_router, lordship_router, yoga_router, ascendant_router
 from api.chart_routes import chart_router
+from api.prashna_routes import prashna_router
 
 app = FastAPI(
     title="Laghu Parashari Astrology API",
@@ -55,6 +57,7 @@ app.include_router(lordship_router)
 app.include_router(yoga_router)
 app.include_router(ascendant_router)
 app.include_router(chart_router)
+app.include_router(prashna_router)
 
 
 @app.get("/", tags=["Health"])
@@ -68,6 +71,7 @@ def root():
             "yoga":       "/yoga",
             "ascendants": "/ascendants",
             "charts":     "/charts",
+            "prashna":    "/prashna",
             "docs":       "/docs",
         },
     }

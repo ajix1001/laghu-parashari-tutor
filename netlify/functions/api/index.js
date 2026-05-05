@@ -586,6 +586,261 @@ function generateKundaliSvg({ lagna_sign, house_occupants, retrograde = [], size
   return svg.join("\n");
 }
 
+// ─── Prashna (Horary) ────────────────────────────────────────────────────────
+const PRASHNA_CATEGORIES = {
+  career:       { label:"Career & Work",            houses:[10,6,11], keywords:["career","job","work","promotion","salary","boss","office","profession","business","employment","interview"] },
+  marriage:     { label:"Marriage",                 houses:[7,2,11],  keywords:["marry","marriage","wedding","engagement","spouse","husband","wife","alliance","matrimony"] },
+  relationship: { label:"Love & Relationship",      houses:[7,5],     keywords:["love","romance","boyfriend","girlfriend","crush","relationship","partner","dating","breakup"] },
+  children:     { label:"Children",                 houses:[5,9,11],  keywords:["child","children","baby","pregnancy","conceive","son","daughter","kid"] },
+  finance:      { label:"Money & Finance",          houses:[2,11,5],  keywords:["money","wealth","finance","income","loan","debt","investment","savings","rich","fund","buy","afford"] },
+  education:    { label:"Education & Exams",        houses:[4,5,9],   keywords:["study","exam","education","degree","admission","college","university","school","course","result"] },
+  health:       { label:"Health",                   houses:[1,6,8],   keywords:["health","disease","illness","sick","surgery","recover","cure","medical","doctor","hospital","pain"] },
+  travel:       { label:"Travel & Relocation",      houses:[3,9,12],  keywords:["travel","journey","trip","abroad","foreign","visa","relocate","move","migration","immigration"] },
+  property:     { label:"Home & Property",          houses:[4,11],    keywords:["house","property","land","home","apartment","real estate","rent","buy a house"] },
+  litigation:   { label:"Legal & Disputes",         houses:[6,8,7],   keywords:["court","lawsuit","legal","litigation","dispute","case","police","fight","enemy","lawyer"] },
+  lost_object:  { label:"Lost Object / Missing",    houses:[2,4,7],   keywords:["lost","missing","stolen","find","recover","where is"] },
+  spiritual:    { label:"Spiritual Path",           houses:[9,12,5],  keywords:["spiritual","moksha","liberation","guru","god","sadhana","meditation","dharma"] },
+  general:      { label:"General Guidance",         houses:[1,10,7],  keywords:[] },
+};
+
+const MOVABLE_SIGNS = new Set(["Aries","Cancer","Libra","Capricorn"]);
+const FIXED_SIGNS   = new Set(["Taurus","Leo","Scorpio","Aquarius"]);
+
+function detectCategory(question) {
+  const q = (question || "").toLowerCase();
+  let best = "general", hits = 0;
+  for (const [cat, meta] of Object.entries(PRASHNA_CATEGORIES)) {
+    let n = 0;
+    for (const kw of meta.keywords) {
+      const re = new RegExp(`\\b${kw.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}`, "i");
+      if (re.test(q)) n++;
+    }
+    if (n > hits) { hits = n; best = cat; }
+  }
+  return best;
+}
+
+function signNature(sign) {
+  if (MOVABLE_SIGNS.has(sign))
+    return { label:"Movable (Chara)", hint:"Quick results, change is favoured — outcome unfolds soon." };
+  if (FIXED_SIGNS.has(sign))
+    return { label:"Fixed (Sthira)",  hint:"Delay or status-quo — the situation resists change; outcome is slow." };
+  return   { label:"Dual (Dwiswabhava)", hint:"Partial or repeat results — the matter resolves in stages, not at once." };
+}
+
+function ord(n){return ({1:"1st",2:"2nd",3:"3rd"})[n] || `${n}th`;}
+
+function angularDistance(h1, h2){ return ((h2 - h1 + 12) % 12) || 12; }
+
+function hasClassicalAspect(fromHouse, toHouse, planet) {
+  const d = angularDistance(fromHouse, toHouse);
+  if (d === 7) return true;
+  if (planet === "Mars"    && (d === 4 || d === 8))  return true;
+  if (planet === "Jupiter" && (d === 5 || d === 9))  return true;
+  if (planet === "Saturn"  && (d === 3 || d === 10)) return true;
+  if ((planet === "Rahu" || planet === "Ketu") && (d === 5 || d === 9)) return true;
+  return false;
+}
+
+function scoreToVerdict(score) {
+  if (score >=  6) return { verdict:"Yes — Strongly Favoured",     color:"gold",   headline:"The chart speaks clearly in your favour." };
+  if (score >=  3) return { verdict:"Yes — Favoured",              color:"indigo", headline:"The signs lean toward a positive outcome." };
+  if (score >=  1) return { verdict:"Mixed — Cautiously Hopeful",  color:"indigo", headline:"Some support, but expect partial results or effort." };
+  if (score >= -2) return { verdict:"Uncertain — Wait & Watch",    color:"ochre",  headline:"The picture is unclear. Avoid major commitments now." };
+  if (score >= -5) return { verdict:"Unfavourable — Likely No",    color:"ochre",  headline:"The signs are against the matter at this time." };
+  return             { verdict:"No — Strongly Against",            color:"red",    headline:"The chart strongly counsels against this path." };
+}
+
+const ELEMENT_DIRECTION = {
+  Aries:"East", Leo:"East", Sagittarius:"East",
+  Taurus:"South", Virgo:"South", Capricorn:"South",
+  Gemini:"West", Libra:"West", Aquarius:"West",
+  Cancer:"North", Scorpio:"North", Pisces:"North",
+};
+
+function evaluatePrashna(chart, category) {
+  const meta      = PRASHNA_CATEGORIES[category];
+  const primaryH  = meta.houses[0];
+  const otherHs   = meta.houses.slice(1);
+  const lagna     = chart.lagna_sign;
+  const lagnaIdx  = SIGN_IDX[lagna];
+  const planets   = chart.planets;
+  const occ       = chart.house_occupants;
+
+  const SIGN_LORD = {Aries:"Mars",Taurus:"Venus",Gemini:"Mercury",Cancer:"Moon",
+                     Leo:"Sun",Virgo:"Mercury",Libra:"Venus",Scorpio:"Mars",
+                     Sagittarius:"Jupiter",Capricorn:"Saturn",Aquarius:"Saturn",Pisces:"Jupiter"};
+
+  const lagnaLord     = SIGN_LORD[lagna];
+  const lagnaLordEval = evaluatePlanet(lagnaLord, lagna);
+  const lagnaLordH    = planets[lagnaLord]?.house;
+
+  const matterSign    = SIGNS[(lagnaIdx + primaryH - 1) % 12];
+  const matterLord    = SIGN_LORD[matterSign];
+  const matterLordH   = planets[matterLord]?.house;
+  const matterEval    = evaluatePlanet(matterLord, lagna);
+
+  const moonH         = planets["Moon"]?.house;
+  const moonEval      = evaluatePlanet("Moon", lagna);
+
+  // Connections between lagna lord and matter lord
+  const connections = [];
+  if (lagnaLord === matterLord) {
+    connections.push(`${lagnaLord} rules both the lagna and the matter — the querent IS the matter; very direct involvement.`);
+  } else {
+    if (lagnaLordH === matterLordH) {
+      connections.push(`${lagnaLord} (lagna lord) and ${matterLord} (lord of ${ord(primaryH)}) are conjunct in the ${ord(lagnaLordH)} house — strong yoga of querent and matter.`);
+    }
+    if (hasClassicalAspect(lagnaLordH, matterLordH, lagnaLord) ||
+        hasClassicalAspect(matterLordH, lagnaLordH, matterLord)) {
+      connections.push(`${lagnaLord} and ${matterLord} are in mutual aspect — the querent and the matter are linked.`);
+    }
+    const llSign = SIGNS[(lagnaIdx + (lagnaLordH ?? 1) - 1) % 12];
+    const mlSign = SIGNS[(lagnaIdx + (matterLordH ?? 1) - 1) % 12];
+    if (SIGN_LORD[llSign] === matterLord && SIGN_LORD[mlSign] === lagnaLord) {
+      connections.push(`${lagnaLord} and ${matterLord} are in parivartana (mutual exchange) — the highest form of yoga; outcome strongly tied to wish.`);
+    }
+  }
+
+  // Influences on the primary house
+  const occupants = occ[primaryH] || occ[String(primaryH)] || [];
+  const supports = [], afflictions = [];
+
+  for (const p of occupants) {
+    const ev = evaluatePlanet(p, lagna);
+    if (ev.is_yoga_karaka) {
+      supports.push(`${p} (Yoga Karaka) sits in the ${ord(primaryH)} house — a powerful blessing on the matter.`);
+    } else if (ev.nature === "Auspicious") {
+      supports.push(`${p} (functional benefic) occupies the ${ord(primaryH)} house.`);
+    } else if (ev.nature === "Inauspicious" || ev.nature === "Maraka") {
+      afflictions.push(`${p} (functional malefic) afflicts the ${ord(primaryH)} house.`);
+    } else if (NAT_BENEFICS.has(p)) {
+      supports.push(`${p} (natural benefic) sits in the ${ord(primaryH)} house.`);
+    } else if (NAT_MALEFICS.has(p)) {
+      afflictions.push(`${p} (natural malefic) sits in the ${ord(primaryH)} house.`);
+    }
+  }
+
+  for (const [p, info] of Object.entries(planets)) {
+    if (occupants.includes(p)) continue;
+    if (hasClassicalAspect(info.house, primaryH, p)) {
+      const ev = evaluatePlanet(p, lagna);
+      if (ev.is_yoga_karaka) {
+        supports.push(`${p} (Yoga Karaka) aspects the ${ord(primaryH)} house — a strong supporting influence.`);
+      } else if (ev.nature === "Auspicious") {
+        supports.push(`${p} (functional benefic) aspects the ${ord(primaryH)} house.`);
+      } else if (ev.nature === "Inauspicious" || ev.nature === "Maraka") {
+        afflictions.push(`${p} (functional malefic) aspects the ${ord(primaryH)} house.`);
+      }
+    }
+  }
+
+  // Score
+  let score = 0;
+  const factors = [];
+  const f = (text, delta) => { factors.push({factor:text, weight:delta}); score += delta; };
+
+  if (lagnaLordEval.is_yoga_karaka)
+    f(`${lagnaLord} (lagna lord) is the Yoga Karaka — querent's position is strong.`, 3);
+  else if ([1,4,5,7,9,10,11].includes(lagnaLordH))
+    f(`${lagnaLord} (lagna lord) sits in a supportive ${ord(lagnaLordH)} house.`, 2);
+  else if ([6,8,12].includes(lagnaLordH))
+    f(`${lagnaLord} (lagna lord) is afflicted in the ${ord(lagnaLordH)} house — querent is under stress.`, -2);
+
+  if (matterEval.is_yoga_karaka)
+    f(`${matterLord} (lord of the ${ord(primaryH)}) is the Yoga Karaka — exceptional support for the matter.`, 3);
+  else if ([1,4,5,7,9,10,11].includes(matterLordH))
+    f(`${matterLord} (lord of the ${ord(primaryH)}) is well-placed in the ${ord(matterLordH)} house.`, 2);
+  else if ([6,8,12].includes(matterLordH)) {
+    const rel = ((matterLordH - primaryH) % 12 + 12) % 12;
+    if ([5,7,11].includes(rel))
+      f(`${matterLord} (lord of the ${ord(primaryH)}) falls in the ${ord(matterLordH)} — loss/affliction of the matter.`, -3);
+    else
+      f(`${matterLord} (lord of the ${ord(primaryH)}) is in a dusthana (${ord(matterLordH)}).`, -2);
+  }
+
+  if (connections.length)
+    f("Lagna lord is connected to the lord of the matter (yoga of querent + matter).", 3);
+
+  if (supports.length)
+    f(`Functional benefic influences on the ${ord(primaryH)} house: ${supports.length}.`, supports.length);
+  if (afflictions.length) {
+    factors.push({factor:`Functional malefic influences on the ${ord(primaryH)} house: ${afflictions.length}.`, weight:-afflictions.length});
+    score -= afflictions.length;
+  }
+
+  if ([6,8,12].includes(moonH))
+    f(`Moon is in the ${ord(moonH)} house — the mind is anxious or unsettled at the moment of asking.`, -1);
+  else if (moonEval.nature === "Auspicious" || moonEval.is_yoga_karaka)
+    f("Moon is functionally auspicious — the mind is clear and the question is sincere.", 1);
+
+  const jupH = planets["Jupiter"]?.house;
+  if (jupH === 1 || hasClassicalAspect(jupH, 1, "Jupiter"))
+    f("Jupiter aspects or sits in the lagna — divine grace upholds the question.", 2);
+  if (jupH === moonH || hasClassicalAspect(jupH, moonH, "Jupiter"))
+    f("Jupiter influences the Moon — the mind is supported by wisdom.", 1);
+
+  const v = scoreToVerdict(score);
+  const sn = signNature(lagna);
+
+  let addendum = null;
+  if (category === "lost_object") {
+    const itemSign = SIGNS[(lagnaIdx + 3) % 12];
+    addendum = `Lost-object hint: the 4th house from lagna (${itemSign}) suggests the object is in the ${ELEMENT_DIRECTION[itemSign] || "?"} direction or near a place with that element's qualities.`;
+  }
+
+  return {
+    category, category_label: meta.label,
+    primary_house: primaryH, other_houses: otherHs,
+    lagna_sign: lagna, lagna_nature: sn.label,
+    lagna_lord: lagnaLord, lagna_lord_house: lagnaLordH,
+    matter_lord: matterLord, matter_lord_house: matterLordH,
+    moon_house: moonH,
+    connections, supports, afflictions, factors,
+    score,
+    verdict: v.verdict, color: v.color, headline: v.headline,
+    timing_hint: sn.hint,
+    addendum,
+  };
+}
+
+function castPrashna(body) {
+  const askedAt = body.asked_at ? new Date(body.asked_at) : new Date();
+  // Convert UTC moment to local civil time using tz_offset (hours east of UTC)
+  const localMs = askedAt.getTime() + (body.tz_offset * 3600 * 1000);
+  const local = new Date(localMs);
+  // Use UTC accessors on `local` to extract the local civil clock components
+  const chart = calculateChart({
+    birth_date: `${local.getUTCFullYear()}-${String(local.getUTCMonth()+1).padStart(2,"0")}-${String(local.getUTCDate()).padStart(2,"0")}`,
+    birth_hour: local.getUTCHours(),
+    birth_minute: local.getUTCMinutes(),
+    latitude: body.latitude,
+    longitude: body.longitude,
+    tz_offset: body.tz_offset,
+  });
+
+  const cat = (body.category && PRASHNA_CATEGORIES[body.category])
+    ? body.category : detectCategory(body.question);
+  const interpretation = evaluatePrashna(chart, cat);
+
+  const retro = Object.entries(chart.planets)
+    .filter(([,info])=>info.is_retrograde).map(([n])=>n);
+  const kundali_svg = generateKundaliSvg({
+    lagna_sign: chart.lagna_sign,
+    house_occupants: chart.house_occupants,
+    retrograde: retro,
+  });
+
+  return {
+    question: body.question,
+    asked_at_utc: askedAt.toISOString(),
+    location: { latitude: body.latitude, longitude: body.longitude, tz_offset: body.tz_offset },
+    chart,
+    interpretation,
+    kundali_svg,
+  };
+}
+
 // ─── Router ───────────────────────────────────────────────────────────────────
 function jsonResp(body, status=200) {
   return {
@@ -672,6 +927,24 @@ exports.handler = async (event) => {
       const p = ASCENDANT_PROFILES[lagna];
       if (!p) return err(`No profile for ${lagna}`, 404);
       return jsonResp({ lagna, ...p });
+    }
+
+    // Prashna
+    if (path === "/prashna/categories" && method === "GET") {
+      return jsonResp({
+        categories: Object.entries(PRASHNA_CATEGORIES).map(([key, m]) => ({
+          key, label: m.label, houses: m.houses, keywords: m.keywords,
+        })),
+      });
+    }
+    if (path === "/prashna/ask" && method === "POST") {
+      if (!body.question || typeof body.question !== "string" || body.question.length < 2)
+        return err("question is required (min 2 chars).", 400);
+      if (typeof body.latitude !== "number" || typeof body.longitude !== "number" || typeof body.tz_offset !== "number")
+        return err("latitude, longitude and tz_offset are required numbers.", 400);
+      if (body.category && !PRASHNA_CATEGORIES[body.category])
+        return err(`Unknown category '${body.category}'.`, 400);
+      return jsonResp(castPrashna(body));
     }
 
     // Health

@@ -72,6 +72,7 @@ body{background-color:#2b1d0e;background-image:url(https://lh3.googleusercontent
 <nav class="fixed left-0 top-0 h-full w-14 hidden lg:flex flex-col items-center justify-center gap-8 z-50">
   <button onclick="goTab('learn')" title="Curriculum" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">menu_book</span></button>
   <button onclick="goTab('chart')" title="Your Chart" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">manage_search</span></button>
+  <button onclick="goTab('prashna')" title="Prashna" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">help_center</span></button>
   <button onclick="goTab('saved')" title="Saved Charts" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">bookmark</span></button>
   <button onclick="goTab('ref')" title="Reference" class="text-parchment/30 hover:text-gold-leaf transition-all"><span class="material-symbols-outlined text-xl">library_books</span></button>
 </nav>
@@ -94,9 +95,10 @@ body{background-color:#2b1d0e;background-image:url(https://lh3.googleusercontent
   <!-- Tabs -->
   <div class="flex gap-0 border-b-2 border-sepia-dark/15 mb-7 overflow-x-auto">
     <button class="tab-btn active" id="tab-learn" onclick="goTab('learn')">📖 Curriculum</button>
-    <button class="tab-btn" id="tab-chart"  onclick="goTab('chart')">✦ Your Chart</button>
-    <button class="tab-btn" id="tab-saved"  onclick="goTab('saved')">🔖 Saved Charts</button>
-    <button class="tab-btn" id="tab-ref"    onclick="goTab('ref')">📋 Reference</button>
+    <button class="tab-btn" id="tab-chart"   onclick="goTab('chart')">✦ Your Chart</button>
+    <button class="tab-btn" id="tab-prashna" onclick="goTab('prashna')">❓ Prashna</button>
+    <button class="tab-btn" id="tab-saved"   onclick="goTab('saved')">🔖 Saved Charts</button>
+    <button class="tab-btn" id="tab-ref"     onclick="goTab('ref')">📋 Reference</button>
   </div>
 
   <!-- ═══ TAB: CURRICULUM ══════════════════════════════════════════════════ -->
@@ -278,6 +280,68 @@ body{background-color:#2b1d0e;background-image:url(https://lh3.googleusercontent
     </div><!-- /chartResults -->
   </div><!-- /pane-chart -->
 
+  <!-- ═══ TAB: PRASHNA ═════════════════════════════════════════════════════ -->
+  <div id="pane-prashna" class="hidden">
+
+    <div class="bg-aged-paper/40 border border-sepia-dark/15 p-6 mb-7">
+      <p class="font-header text-earth-red text-xs tracking-widest mb-3">Seek Guidance — Prashna Shastra</p>
+      <p class="text-sm text-sepia-dark/70 mb-4 italic">
+        Frame a sincere question, settle the mind, and cast the chart for this very moment.
+        The heavens will speak through the rising sign and the lord of the matter.
+      </p>
+
+      <div class="mb-3">
+        <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Your Question</label>
+        <textarea id="pQuestion" class="inp" rows="2"
+          placeholder="e.g. Will I get the job I interviewed for?  ·  Should I marry this person?  ·  Where is my lost ring?"></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Category (auto if blank)</label>
+          <select id="pCategory" class="inp">
+            <option value="">— auto-detect —</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Latitude</label>
+          <input id="pLat" type="number" step="0.0001" class="inp" placeholder="e.g. 28.6139"/>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Longitude</label>
+          <input id="pLon" type="number" step="0.0001" class="inp" placeholder="e.g. 77.2090"/>
+        </div>
+        <div>
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">UTC Offset (hrs)</label>
+          <input id="pTZ" type="number" step="0.5" class="inp" placeholder="e.g. 5.5"/>
+        </div>
+        <div class="col-span-2 md:col-span-2">
+          <label class="font-header text-[9px] text-indigo-ink tracking-widest block mb-1">Place (optional — autofills coords)</label>
+          <div class="relative">
+            <div class="flex gap-2">
+              <input id="pPlace" class="inp flex-1" placeholder="Type a city and press Search…"
+                     onkeydown="if(event.key==='Enter'){event.preventDefault();geocodePrashnaPlace();}"/>
+              <button type="button" onclick="geocodePrashnaPlace()" class="obtn sm whitespace-nowrap">Search</button>
+              <button type="button" onclick="useMyLocation()" class="obtn sm ghost whitespace-nowrap" title="Use browser geolocation">📍 Me</button>
+            </div>
+            <ul id="pGeoDropdown" class="hidden absolute z-50 w-full mt-1 border border-sepia-dark/25 bg-parchment shadow-lg max-h-52 overflow-y-auto"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 flex-wrap">
+        <button id="askBtn" onclick="askPrashna()" class="obtn">Cast Prashna</button>
+        <span id="askLoader" class="hidden text-earth-red font-header text-[10px] tracking-widest">
+          <span class="spin material-symbols-outlined text-lg">brightness_5</span> Listening to the moment…
+        </span>
+        <span id="askErr" class="hidden font-header text-[10px] text-earth-red tracking-wide"></span>
+      </div>
+    </div>
+
+    <div id="prashnaResults" class="hidden fi space-y-6"></div>
+
+  </div><!-- /pane-prashna -->
+
   <!-- ═══ TAB: SAVED CHARTS ════════════════════════════════════════════════ -->
   <div id="pane-saved" class="hidden">
     <div class="flex items-center justify-between mb-4">
@@ -352,13 +416,15 @@ let lastChart = null;  // last computed chart data
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function goTab(t){
-  ['learn','chart','saved','ref'].forEach(id=>{
-    document.getElementById('pane-'+id).classList.toggle('hidden',id!==t);
+  ['learn','chart','prashna','saved','ref'].forEach(id=>{
+    const pane = document.getElementById('pane-'+id);
+    if(pane) pane.classList.toggle('hidden',id!==t);
     const btn=document.getElementById('tab-'+id);
     if(btn) btn.classList.toggle('active',id===t);
   });
-  if(t==='ref')   loadRefData();
-  if(t==='saved') loadSavedCharts();
+  if(t==='ref')     loadRefData();
+  if(t==='saved')   loadSavedCharts();
+  if(t==='prashna') initPrashnaTab();
 }
 
 // ── Utilities ──────────────────────────────────────────────────────────────────
@@ -441,6 +507,220 @@ document.addEventListener('click',e=>{
     document.getElementById('geoDropdown').classList.add('hidden');
   }
 });
+
+// ── Prashna (Horary) ──────────────────────────────────────────────────────────
+let _prashnaCategoriesLoaded = false;
+let _pGeoResults = [];
+
+async function initPrashnaTab(){
+  if(_prashnaCategoriesLoaded) return;
+  // Load categories
+  try{
+    const res = await apiFetch('/prashna/categories');
+    const sel = document.getElementById('pCategory');
+    res.categories.forEach(c=>{
+      const opt = document.createElement('option');
+      opt.value = c.key;
+      opt.textContent = `${c.label}  (houses ${c.houses.join(', ')})`;
+      sel.appendChild(opt);
+    });
+    _prashnaCategoriesLoaded = true;
+  }catch(e){/* non-fatal: auto-detect still works */}
+
+  // Pre-fill timezone offset from browser
+  if(!document.getElementById('pTZ').value){
+    document.getElementById('pTZ').value = (-new Date().getTimezoneOffset()/60).toString();
+  }
+}
+
+async function geocodePrashnaPlace(){
+  const q  = document.getElementById('pPlace').value.trim();
+  const dd = document.getElementById('pGeoDropdown');
+  if(!q){dd.classList.add('hidden');return;}
+  dd.innerHTML = '<li class="geo-none">Searching…</li>';
+  dd.classList.remove('hidden');
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=6`,
+      {headers:{'Accept-Language':'en'}});
+    _pGeoResults = await res.json();
+    if(!_pGeoResults.length){dd.innerHTML='<li class="geo-none">No results found</li>';return;}
+    dd.innerHTML = _pGeoResults.map((r,i)=>`<li onclick="selectPrashnaGeo(${i})">${r.display_name}</li>`).join('');
+  }catch(e){dd.innerHTML='<li class="geo-none">Search failed — check connection</li>';}
+}
+
+async function selectPrashnaGeo(i){
+  const r = _pGeoResults[i];
+  document.getElementById('pPlace').value = r.display_name;
+  document.getElementById('pLat').value   = (+r.lat).toFixed(4);
+  document.getElementById('pLon').value   = (+r.lon).toFixed(4);
+  document.getElementById('pGeoDropdown').classList.add('hidden');
+  // Try fetching tz from coords (best-effort)
+  try{
+    const tzRes = await fetch(`https://timeapi.io/api/TimeZone/coordinate?latitude=${r.lat}&longitude=${r.lon}`);
+    if(tzRes.ok){
+      const tz = await tzRes.json();
+      const offHours = tz.currentUtcOffset?.seconds != null
+        ? tz.currentUtcOffset.seconds/3600 : null;
+      if(offHours !== null) document.getElementById('pTZ').value = offHours.toString();
+    }
+  }catch(e){/* ignore */}
+}
+
+function useMyLocation(){
+  if(!navigator.geolocation){
+    showAskErr("Geolocation not supported in this browser.");
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      document.getElementById('pLat').value = pos.coords.latitude.toFixed(4);
+      document.getElementById('pLon').value = pos.coords.longitude.toFixed(4);
+      document.getElementById('pTZ').value  = (-new Date().getTimezoneOffset()/60).toString();
+    },
+    err => showAskErr("Could not read location: " + err.message),
+    {timeout: 8000}
+  );
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#pPlace')&&!e.target.closest('#pGeoDropdown')&&!e.target.closest('[onclick="geocodePrashnaPlace()"]')){
+    const dd = document.getElementById('pGeoDropdown');
+    if(dd) dd.classList.add('hidden');
+  }
+});
+
+function setAskLoading(on){
+  document.getElementById('askBtn').disabled = on;
+  document.getElementById('askLoader').classList.toggle('hidden', !on);
+}
+function showAskErr(msg){
+  const e = document.getElementById('askErr');
+  e.textContent = msg; e.classList.remove('hidden');
+}
+function clearAskErr(){document.getElementById('askErr').classList.add('hidden');}
+
+async function askPrashna(){
+  clearAskErr();
+  const question = document.getElementById('pQuestion').value.trim();
+  if(question.length < 2){ showAskErr("Please enter your question."); return; }
+  const lat = parseFloat(document.getElementById('pLat').value);
+  const lon = parseFloat(document.getElementById('pLon').value);
+  const tz  = parseFloat(document.getElementById('pTZ').value);
+  if(Number.isNaN(lat)||Number.isNaN(lon)||Number.isNaN(tz)){
+    showAskErr("Please provide a valid location (use Search, 📍 Me, or fill the fields).");
+    return;
+  }
+  const cat = document.getElementById('pCategory').value || null;
+
+  setAskLoading(true);
+  document.getElementById('prashnaResults').classList.add('hidden');
+  try{
+    const res = await apiFetch('/prashna/ask','POST',{
+      question, latitude: lat, longitude: lon, tz_offset: tz, category: cat,
+    });
+    renderPrashna(res);
+  }catch(e){
+    showAskErr(e.message || "Prashna failed.");
+  }finally{
+    setAskLoading(false);
+  }
+}
+
+function renderPrashna(r){
+  const out = document.getElementById('prashnaResults');
+  const i   = r.interpretation;
+  const c   = r.chart;
+  const askedLocal = new Date(r.asked_at_utc);
+  const askedStr   = askedLocal.toLocaleString();
+
+  const factorRows = (i.factors||[]).map(f =>
+    `<tr><td>${f.factor}</td><td class="text-right tabular-nums ${f.weight>=0?'text-green-800':'text-earth-red'}">${f.weight>0?'+':''}${f.weight}</td></tr>`
+  ).join('');
+
+  const list = (arr, cls='') => (arr||[]).length
+    ? `<ul class="list-disc pl-5 space-y-1 ${cls}">${arr.map(s=>`<li>${s}</li>`).join('')}</ul>`
+    : `<p class="text-sm opacity-50 italic">— none —</p>`;
+
+  const planetRows = Object.entries(c.planets).map(([n,info]) =>
+    `<tr><td>${SYM[n]||''} ${n}</td><td>${info.sign}</td><td class="tabular-nums">${(+info.sign_deg).toFixed(2)}°</td><td>${info.house}</td><td>${info.is_retrograde?'℞':''}</td></tr>`
+  ).join('');
+
+  out.innerHTML = `
+    <!-- Verdict card -->
+    <div class="quality-${i.color} p-5 border">
+      <p class="font-header text-[10px] tracking-widest opacity-70 mb-1">Prashna Verdict</p>
+      <p class="font-oracle text-2xl mb-1">${i.verdict}</p>
+      <p class="text-sm italic mb-3">${i.headline}</p>
+      <p class="text-xs opacity-80"><strong>Score:</strong> ${i.score}  ·  <strong>Category:</strong> ${i.category_label}  ·  <strong>Primary house:</strong> ${i.primary_house}</p>
+    </div>
+
+    <!-- Question echo + meta -->
+    <div class="bg-aged-paper/40 border border-sepia-dark/15 p-4">
+      <p class="font-header text-[10px] tracking-widest text-indigo-ink mb-1">Question</p>
+      <p class="text-base italic mb-2">"${r.question.replace(/</g,'&lt;')}"</p>
+      <p class="font-header text-[9px] tracking-wider opacity-60">
+        Asked: ${askedStr}  ·  Lagna: <strong>${i.lagna_sign}</strong> (${i.lagna_nature})  ·
+        Lagna Lord: ${i.lagna_lord} (in H${i.lagna_lord_house})  ·
+        Matter Lord: ${i.matter_lord} (in H${i.matter_lord_house})  ·
+        Moon: H${i.moon_house}
+      </p>
+    </div>
+
+    <!-- Kundali + Planet table -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">Prashna Kundali</p>
+        <div class="border border-sepia-dark/20 bg-aged-paper/30">${r.kundali_svg||''}</div>
+      </div>
+      <div>
+        <p class="font-header text-earth-red text-xs tracking-widest mb-2">Planetary Positions</p>
+        <div class="overflow-x-auto">
+          <table class="w-full dtable text-xs">
+            <thead><tr><th>Planet</th><th>Sign</th><th>Deg</th><th>House</th><th>R</th></tr></thead>
+            <tbody>${planetRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connections -->
+    <div>
+      <p class="font-header text-earth-red text-xs tracking-widest mb-2">Querent ↔ Matter — Connection</p>
+      ${list(i.connections)}
+    </div>
+
+    <!-- Supports & Afflictions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="font-header text-[10px] text-green-800 tracking-widest mb-2">Supporting Influences</p>
+        ${list(i.supports)}
+      </div>
+      <div>
+        <p class="font-header text-[10px] text-earth-red tracking-widest mb-2">Afflictions</p>
+        ${list(i.afflictions)}
+      </div>
+    </div>
+
+    <!-- Factor breakdown -->
+    <div>
+      <p class="font-header text-earth-red text-xs tracking-widest mb-2">Factor Breakdown</p>
+      <div class="overflow-x-auto">
+        <table class="w-full dtable text-xs">
+          <thead><tr><th>Factor</th><th class="text-right">Weight</th></tr></thead>
+          <tbody>${factorRows || '<tr><td colspan="2" class="opacity-50 italic">No factors.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Timing & addendum -->
+    <div class="rule-box ${i.color==='gold'?'gold':i.color==='red'?'red':'indigo'}">
+      <p class="font-header text-[10px] text-indigo-ink tracking-widest mb-1">Timing</p>
+      <p class="text-sm">${i.timing_hint}</p>
+      ${i.addendum ? `<p class="text-sm mt-2 italic opacity-80">${i.addendum}</p>` : ''}
+    </div>
+  `;
+  out.classList.remove('hidden');
+}
 
 // ── Chart Calculation ─────────────────────────────────────────────────────────
 async function calcChart(){
